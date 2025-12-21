@@ -1,1 +1,23 @@
 THESE ARE THE DOWNLOADED DATASETS FOR MY FIRST TEST OF OUR MODEL
+
+USA	USA
+India	IND
+Nigeria	NGA
+Brazil	BRA
+France	FRA
+
+Testing Vars:
+Climate:
+- Mean Temperature
+- Precipitation
+- Climate Disasters (count)
+
+Agriculture:
+- Cereal Yield
+- Food Production Index
+
+Food Security:
+- Undernourishment
+
+Socioeconomic (context only):
+- GDP per capita
