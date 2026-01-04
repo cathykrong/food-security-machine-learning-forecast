@@ -35,7 +35,7 @@
 % \author{}
 \affil[1]{Old Scona Academic, Edmonton, Alberta}
 \affil[2]{United World Colleges - Red Cross Nordic, Norway}
-\date{January 5, 2026}
+\date{January 9, 2026}
 \setlength {\marginparwidth }{2cm}
 
 \begin{document}
@@ -53,9 +53,16 @@ Feature importance analysis revealed that geographic location was among the most
 {\textbf{Keywords}: \\ Agriculture, Social Determinants, Prospective Validation}
 
 \section{Introduction}
-Opioid dependence and abuse are critical public health concerns with far-reaching consequences for individuals and society. These disorders not only lead to physical health issues but cause lasting damage to brain function, impairing cognition, behavior, and social interactions, and in severe cases, resulting in death. \cite{justin_oh_2023, worldbank2021, worldbank2015} Addressing the opioid crisis requires targeted prevention strategies, particularly for adolescents, a population often overlooked in research. This pivotal stage of development is characterized by physical, mental, emotional, and cognitive changes \cite{FAOSTATindicator} wherein individuals are more vulnerable to substance and opioid misuse. \cite {Varshita2024, yang2022individualized, mccabe2017trends}
 
-With the bulk of existing research focusing more on adults \cite{yang2022individualized}, however, adolescent-specific risk factors are less understood. Mental health disorders like bipolar disorder, which heightens impulsivity and risk-taking \cite{python11}, are common in adolescence and may increase the risk of opioid dependence. \cite{pedregosa2011scikit} Environmental influences, including peer relationships, geographic location \cite{QGIS}, community dynamics, socioeconomic status, and other contextual variables further shape adolescents’ susceptibility to opioid abuse. Understanding these environmental factors can help pinpoint the most critical determinants, offering insights into the environmental and social drivers of adolescent opioid abuse. This investigation into the relationship between mental health and other factors is essential for developing substance abuse prevention strategies for adolescents. 
+\cite{justin_oh_2023, worldbank2021, worldbank2015}, \cite{FAOSTATindicator}, \cite {Varshita2024, Salles-Costa2022, GeorgeAM_2022}
+
+\cite{akinniyi2024}, \cite{Salles-Costa2022}, \cite{worldbank2025}, \cite{GeorgeAM_2022}, \cite{owidagriprod}
+
+\cite{USDANASS_QuickStats}
+
+Opioid dependence and abuse are critical public health concerns with far-reaching consequences for individuals and society. These disorders not only lead to physical health issues but cause lasting damage to brain function, impairing cognition, behavior, and social interactions, and in severe cases, resulting in death. Addressing the opioid crisis requires targeted prevention strategies, particularly for adolescents, a population often overlooked in research. This pivotal stage of development is characterized by physical, mental, emotional, and cognitive changes  wherein individuals are more vulnerable to substance and opioid misuse. 
+
+With the bulk of existing research focusing more on adults , however, adolescent-specific risk factors are less understood. Mental health disorders like bipolar disorder, which heightens impulsivity and risk-taking  are common in adolescence and may increase the risk of opioid dependence.  Environmental influences, including peer relationships, geographic location, community dynamics, socioeconomic status, and other contextual variables further shape adolescents’ susceptibility to opioid abuse. Understanding these environmental factors can help pinpoint the most critical determinants, offering insights into the environmental and social drivers of adolescent opioid abuse. This investigation into the relationship between mental health and other factors is essential for developing substance abuse prevention strategies for adolescents. 
 
 Machine learning is a robust tool in addressing these complexities, able to analyze large datasets and interactions among variables and medical conditions as well as well-suited for identifying risk factors and classifying diseases. In this study, we utilized Mental Health Client Level Data (MH-CLD) and U.S. census data to examine adolescent opioid abuse, mental health conditions, and social factors. By cleaning, normalizing, and synthesizing these datasets, we trained and tested machine-learning models using multi-year data. This approach aims to uncover the most significant risk factors for adolescent opioid dependence and abuse.
 
@@ -84,6 +91,7 @@ The study sample was derived as follows: the training datasets were created usin
 \end{figure}
 
 Notably, the MH-CLD data does not link individual case IDs across years, ensuring that cases are not traceable longitudinally. To minimize bias and maintain model integrity, no OUD data were included in the features. This approach ensured a clean separation of training, validation, and testing data to support robust model development and evaluation.
+
 \begin{figure*}
     \centering
     \includegraphics[width=1\textwidth]{fig2.png}
@@ -279,7 +287,7 @@ Through embedding advanced analytic into policy making, governments can more eff
 \nocite{*}
 
 \section*{Acknowledgements}
-Anyone to thank/credit for helping your team along the way? This is the place to do it!
+The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. CR would like to thank Government of Alberta - Grant MacEwan UWC Scholarship support for studying in UWC-RCN and participating HSBDC. 
 
 \bibliography{bibliography}
 
