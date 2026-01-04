@@ -1,0 +1,505 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+%% HSBDC2025
+
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{caption,subcaption,graphicx,longtable,underscore}
+%\usepackage{multicol}
+%\usepackage{supertabular,booktabs}
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{natbib}
+\bibliographystyle{unsrt}
+%% Title
+\title{
+		\usefont{OT1}{bch}{b}{n}
+		\normalfont \normalsize \textsc{STEM Fellowship High School Big Data and AI Challenge 2025-2026} \\ [10pt]
+		\huge Predicting Opioid Use Disorders in the U.S. Using Machine Learning Among Adolescents Receiving Mental Health Services\\
+}
+\selectlanguage{english}
+\usepackage{authblk}
+\author{Cathy Rong}
+\author{Jessie Song}
+\author{Afnan Rajab}
+\author{Iris Li}
+\author{Chase Pelechytik}
+\affil{Old Scona Academic}
+\date{January 10, 2025}
+\setlength {\marginparwidth }{2cm}
+\begin{document}
+\maketitle
+%\begin{multicols}{1}
+\begin{abstract}
+Opioid use disorder (OUD), encompassing opioid dependence and abuse, has risen sharply among US adolescents over the past decade, with its impact varying geographically across states. This retrospective study analyzed geographic, and social determinants, individual mental health diagnoses, and demographic data aiming to explore these inequities. A predictive model for OUD was developed using 99 features from the Mental Health Client Level Data (MH-CLD) dataset and U.S. Census Bureau data.
+
+Machine learning classification algorithms, such as logistic regression with ridge regularization, LASSO, and random forest, were used to predict OUD. Repeated sampling of balanced classes was implemented to address data imbalance and enhance model performance. The model achieved a specificity of 84\% for 2019 predictions using 2018 training data and a balance accuracy of 86\% for 2022 predictions using late 2022 data. This approach enabled comparisons of pre- and post-pandemic OUD trends.
+
+Feature importance analysis revealed that geographic location was among the most influential predictors. The model supports individualized predictions that can be scaled to inform community-specific health policies and decision-making. This predictive capability provides valuable insights to mitigate the opioid crisis in the U.S. and demonstrates the potential of machine learning as a tool for health planning and policy development.
+
+\end{abstract}  
+{\textbf{Keywords}: \\ Adolescents, Opioid Use Disorder, Machine Learning, Social Determinants, Prospective Validation}
+
+\section{Introduction}
+Opioid dependence and abuse are critical public health concerns with far-reaching consequences for individuals and society. These disorders not only lead to physical health issues but cause lasting damage to brain function, impairing cognition, behavior, and social interactions, and in severe cases, resulting in death. \cite {ahmadi2021trends, herlinger2022opioid, yule2018opioid} Addressing the opioid crisis requires targeted prevention strategies, particularly for adolescents, a population often overlooked in research. This pivotal stage of development is characterized by physical, mental, emotional, and cognitive changes \cite{schulenberg2010substance} wherein individuals are more vulnerable to substance and opioid misuse. \cite {yang2022individualized}
+
+With the bulk of existing research focusing more on adults \cite{mccabe2017trends}, however, adolescent-specific risk factors are less understood. Mental health disorders like bipolar disorder, which heightens impulsivity and risk-taking \cite{chue2008prevalence}, are common in adolescence and may increase the risk of opioid dependence. \cite{birmaher2013bipolar} Environmental influences, including peer relationships, geographic location \cite{johnson2023demographic, hewitt2021trends}, community dynamics, socioeconomic status \cite{elgar2013educational, andrabi2017socioeconomic}, and other contextual variables \cite{elgar2013educational, rafiee2023multilayer, williams2009anxiety,  smith2022prevalence, cdc2022youth} further shape adolescents’ susceptibility to opioid abuse. Understanding these environmental factors can help pinpoint the most critical determinants, offering insights into the environmental and social drivers of adolescent opioid abuse. This investigation into the relationship between mental health and other factors is essential for developing substance abuse prevention strategies for adolescents. \cite{chue2008prevalence}
+
+Machine learning is a robust tool in addressing these complexities, able to analyze large datasets and interactions among variables and medical conditions as well as well-suited for identifying risk factors and classifying \cite{yang2022individualized} diseases \cite{lister2022integrated, smith2023factors}. In this study, we utilized Mental Health Client Level Data (MH-CLD) and U.S. census data \cite{uscensus_dataprofiles} to examine adolescent opioid abuse, mental health conditions, and social factors. By cleaning, normalizing, and synthesizing these datasets, we trained and tested machine-learning models using multi-year data. This approach aims to uncover the most significant risk factors for adolescent opioid dependence and abuse.
+
+\section{Materials \& Methods}
+
+\subsection{Study Cohort}
+This study utilized individual-level mental health data collected from 2013 to 2022 using the MH-CLD dataset \cite{samhsa2018data}, which is comprehensively composed of demographic, clinical, and outcome data for individuals receiving services from state mental health agencies in the United States during a state-defined 12-month reporting period \cite{burstein2019emergency}. The dataset includes information on individuals who accessed mental health support services such as screening, crisis services, and telemedicine programs offered or funded by the U.S. government during the specified time frame.
+
+For this analysis, we focused on individuals aged 12 to 17 years, a critical developmental stage for identifying mental health and substance use disorders, including opioid use disorder (OUD). The study cohort consisted of 921,725 clients from the 2018 database with 660 OUD cases and 1,031,799 clients from the 2022 database with 1,892 OUD cases. These two-time points were chosen to enable a comparative analysis of OUD prediction trends before and after the onset of the COVID-19 pandemic, allowing for an examination of potential mental health service utilization shifts and outcomes influenced by the pandemic.
+
+\subsection{Study Features and Target Outcome}
+The study features included data on mental health diagnoses, demographic characteristics, utilization of mental health facilities, and co-occurring substance use-related conditions. The primary target outcome variable was OUD, encompassing opioid dependence and abuse, reflecting the growing public health concern over opioid misuse and its associated societal and clinical implications.
+
+In addition to individual-level data, the dataset also included geographic information such as state, division, and region. To enrich the analysis we incorporated supplementary data (32 features) from external sources such as the U.S. Census Bureau datasets and other publicly available regional databases. These sources provided background information for each 50 states, including population demographics, economic indicators, employment rates, poverty levels, crime statistics, and population health statistics. This contextual data enabled a more comprehensive understanding of the social, financial, and health-related factors potentially influencing OUD trends.
+
+By integrating these diverse datasets, the study aimed to provide a robust framework for analyzing OUD prediction and its variation across different geographic and demographic contexts, with particular emphasis on changes observed before and after the COVID-19 pandemic.
+
+\subsection{Sample Derivation}
+The study sample was derived as follows: the training datasets were created using the 2018 (N=645,207,70\%) and 2022 data (N=505,582,49\%). For validation, 30\% of the 2018 data and 21\% of the 2022 data were randomly selected to serve as validation datasets. For testing, the 2019 dataset was used to test the model built on the 2018 data, while 30\% of the 2022 dataset was used to test the model. Figure \ref{fig:1} presents the flow chart for the machine learning model, including the data integration and model validation.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig1.png}
+    \caption{Study Flow Chart}
+    \label{fig:1}
+\end{figure}
+
+Notably, the MH-CLD data does not link individual case IDs across years, ensuring that cases are not traceable longitudinally. To minimize bias and maintain model integrity, no OUD data were included in the features. This approach ensured a clean separation of training, validation, and testing data to support robust model development and evaluation.
+\begin{figure*}
+    \centering
+    \includegraphics[width=1\textwidth]{fig2.png}
+    \caption{2018 Cohort demographic descriptive}
+    \label{fig:2}
+\end{figure*}
+
+%\begin{figure*}
+%    \centering
+%    \includegraphics[width=1\linewidth]{fig3.png}
+%    \caption{Prevalence Trend of Youth Mental Health Cases}
+%    \label{fig:3}
+%\end{figure*}
+    \begin{figure*}
+        \centering
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{Figure3a.png}
+            \caption[]%
+            {{\small Substance Use Problem}}    
+            \label{fig:3a}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}  
+            \centering 
+            \includegraphics[width=\textwidth]{Figure3b.png}
+            \caption[]%
+            {{\small Anxiety}}    
+            \label{fig:3b}
+        \end{subfigure}
+        \vskip\baselineskip
+        \begin{subfigure}[b]{0.45\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{Figure3c.png}
+            \caption[]%
+            {{\small Depression Disorder}}    
+            \label{fig:3c}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}   
+            \centering 
+            \includegraphics[width=\textwidth]{Figure3d.png}
+            \caption[]%
+            {{\small Trauma}}    
+            \label{fig:3d}
+        \end{subfigure}
+        \caption[  ]
+        {\small Prevalence Trend of Youth Mental Health Cases} 
+        \label{fig:3}
+    \end{figure*}
+
+\subsection{Data Preparation}
+The data preparation process was conducted using Python 3.11 \cite{python11} with the scikit-learn library \cite{pedregosa2011scikit} for predictive modeling. The primary mental health features included diagnoses such as ADHD, anxiety, depressive disorder, oppositional defiant disorder (ODD), pervasive developmental disorder (PDD), conduct disorder, bipolar disorder, schizophrenia, and other mental health conditions. All variables, except for the count of mental health diagnoses, were numerical.
+
+Demographic features including age group, sex, state, race, and ethnicity, were categorical and were one-hot encoded into binary variables. Substance use diagnosis variables provided outcome information and included major conditions such as opioid, alcohol, cannabis, cocaine, and other substance-related disorders. Figure \ref{fig:2} summarizes the descriptive information of the 2018 cohort. Background features such as population size, economy, education, income information, and so on were derived from external datasets (detailed in Supplementary Table \ref{table:A1}).
+%\end{multicols}
+%\begin{multicols}{1}
+%\end{multicols}
+%\begin{multicols}{1}
+To ensure consistent scaling across variables with different units, all continuous features were normalized using the StandardScaler from scikit-learn's preprocessing package. This normalization improved the comparability of features and optimized model performance.
+
+\subsection{Model Selection and Evaluation}
+The COVID-19 pandemic has led to varying social and environmental conditions across different periods, particularly from 2020 to 2022. These changes can influence model performance, making it challenging to generalize findings from pre-pandemic data, such as 2018, to the pandemic era. To address this, we first trained the model on the 2018 data and tested it on the 2019 dataset. This approach helps evaluate the model's performance in a pre-pandemic context. Additionally, we trained and tested the model exclusively using the 2022 data to account for the relatively stable social factors specific to that period during the pandemic. Evaluating the model on both pre-pandemic (2018 and 2019) and post-pandemic (2022) data aimed to determine whether the key risk factors contributing to OUD were consistent across different personal, social, and environmental contexts. 
+
+For the 2018 data and 70\% of 2022 data (30\% holding for testing), the dataset was split into a 70\%/30\% ratio using stratified sampling to address the class imbalance, ensuring that the proportion of subjects with opioid use disorder was consistent in both the training and validation sets. A logistic regression and Lasso model from the scikit-learn library \cite{pedregosa2011scikit} were employed with balanced class weights configured to account for the unequal distribution of outcomes \cite{ware2024artificial}. To ensure robust performance evaluation, we repeated the training and validation process 10 times. The final model is built based on an ensemble model by averaging out each iteration’s coefficients. Performance metrics, including sensitivity, specificity, balanced accuracy, and the area under the receiver operating characteristic curve (ROC-AUC) were used to provide a comprehensive assessment of the model's performance. Feature importance was also calculated to identify key predictors. The model was then tested with the 2019 data and the rest of the 2022 data. This allowed us to assess the machine learning algorithms' generalization in the pre- and post-pandemic period.
+
+\subsection{Assessing Feature Importance}
+
+The importance of features for predicting OUD was evaluated based on the model coefficients. Features with larger absolute coefficient values were deemed more significant, indicating a stronger influence on the target outcome. The sign of the coefficients further reflected the direction of the association: a positive coefficient signified a positive association with OUD, whereas a negative sign indicated an inverse relationship.
+
+\section{Results}
+
+\subsection{Visualizing Trends of Youth Mental Health Prevalence}
+Figure \ref{fig:3} illustrates the trends in mental health diagnoses over the past decade, spanning from 2013 to 2022. The analysis focuses exclusively on conditions demonstrating an upward trend, including substance use problems (\ref{fig:3a}), anxiety disorders (\ref{fig:3b}), depressive disorders (\ref{fig:3c}), and trauma-related (\ref{fig:3d}) conditions. Other mental health conditions were presenting either a downward trend or insufficient trending, rendering them less significant for this analysis. 
+
+Figure \ref{fig:4} presents geospatial heat maps from QGIS \cite{QGIS} illustrating life expectancy  (\ref{fig:4a}), rent costs  (\ref{fig:4b}), actual OUD cases in 2019  (\ref{fig:4c}), and predicted cases using Logistic Regression  (\ref{fig:4d}). The heat maps for life expectancy and rent costs reveal clusters of hot and cold spots predominantly along coastal regions, particularly in the western US and New England. These patterns align with certain hotspots observed in the heat map of actual OUD cases. Moreover, the heat map of predicted cases highlights the improved performance of the machine-learning model.
+
+\begin{figure}
+%\captionsetup[subfigure]{labelformat=empty}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{Figure4a.png}        
+  \caption{Life Expectancy}
+    \label{fig:4a}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{Figure4b.png}        
+  \caption{Rent Cost}
+    \label{fig:4b}
+    \end{subfigure}
+       \begin{subfigure}[b]{0.5\textwidth}
+       \centering
+        \includegraphics[width=\linewidth]{Figure4c.png}
+    \caption{2019 Actual OUD}
+        \label{fig:4c}
+        \end{subfigure}
+       \begin{subfigure}[b]{0.5\textwidth}
+       \centering
+        \includegraphics[width=\linewidth]{Figure4d.png}
+    \caption{2019 Predicted OUD}
+        \label{fig:4d}
+        \end{subfigure}
+    \caption{Map of geographic variation on life expectancy and rent cost and 2019 true OUD cases and predicted cases}
+    \label{fig:4}
+\end{figure}
+
+\subsection{Model Performance}
+OUD was most effectively predicted using a logistic regression classification algorithm (Ridge classifier) compared with the LASSO, a regression technique that performs both feature selection and regularization by shrinking less important feature coefficients to zero, helping simplify models and preventing overfitting, classifier, and Random Forest classifier (See Figure \ref{fig:5}). Logistic regression achieved a balanced accuracy of 76.6\%, compared to 76.5\% for LASSO and 61.0\% for Random Forest.
+
+On the 2018 validation data, the ensembled logistic model achieved a balanced accuracy of 73\%, with a sensitivity of 75\% and specificity of 71\% with an area under the curve (AUC) of 0.81. For the 2019 testing data, the model demonstrated a balanced accuracy of 50\%, with a sensitivity of 16\% and specificity of 84\%. On the 2022 testing data, the model achieved a balanced accuracy of 86\%, sensitivity of 84\%, and specificity of 87\%. The model has an area under the curve (AUC) of 0.82. The ROC curves (\ref{fig:6a}, \ref{fig:7a}) and confusion matrix (\ref{fig:6b}, \ref{fig:7b}) plots for both the 2019 testing data and 2022 validation data are presented in Figures \ref{fig:6} and \ref{fig:7}, respectively.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig5.png}
+    \caption{Balance Accuracy and Hyperparameters Setting for Lasso, Ridge Logistic, and Random Forest Model}
+    \label{fig:5}
+\end{figure}
+
+\begin{figure}
+%\captionsetup[subfigure]{labelformat=empty}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{Figure6a.png}
+  \caption{ROC curve for 2018 Training model}
+    \label{fig:6a}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{Figure6b.png}
+  \caption{Confusion Matrix on 2019 Testing Data}
+    \label{fig:6b}
+    \end{subfigure}
+    \centering
+    \caption{2018-2019 Results}
+    \label{fig:6}
+\end{figure}
+
+\begin{figure}
+%\captionsetup[subfigure]{labelformat=empty}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{Figure7a.png}
+  \caption[justification=centering]%
+      {{\small ROC curve for 2022 Training model}}    
+    \label{fig:7a}
+    \end{subfigure}
+    \begin{subfigure}[b]{0.5\textwidth}
+    \centering
+    \includegraphics[width=0.75\textwidth]{Figure7b.png}
+  \caption{Confusion Matrix on 2022 Testing Data}
+    \label{fig:7b}
+    \end{subfigure}
+    \centering
+    \caption{2022 Results}
+    \label{fig:7}
+\end{figure}
+
+\subsection{Feature Importance}
+
+Figure \ref{fig:8} presents the top 15 dominant features in the 2018 and 2022 datasets using the logistic regression classifier. The absolute values of the coefficients indicate feature importance with higher absolute values signifying greater importance. The sign of the coefficients reflects the direction of the association with OUD; positive values indicate increased risk while negative values suggest protective effects. For instance, living in the District of Columbia, Puerto Rico, or North Carolina is associated with lower OUD incidence whereas residing in Virginia, Maryland, or Minnesota corresponds to a higher risk.
+
+Two social determinants positively associated with OUD were identified: life expectancy and the percentage of children in the state. Notably, there were no significant changes in the coefficients or feature rankings between 2018 and 2022. The complete list of all features with ranking can be found in Supplementary Table \ref{table:A1}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig8.png}
+    \caption{Top 15 most important features for 2018 and 2022 testing data using Logistic Regression}
+    \label{fig:8}
+\end{figure}
+
+\section{Discussion}
+Our analysis yielded the logistic regression classifier with ridge regularization as the best in predicting OUD. This classifier demonstrated strong performance in identifying OUD cases in 2018 and 2022, achieving satisfactory specificity even in 2019 despite slightly lower other results. Consistent geographic factors were identified as top predictors across 2018 and 2022, underscoring the significant impact of local geographic variations on the risk of SUD. 
+
+The use of the logistic regression classifier (Ridge) is based entirely on a data-driven approach. To ensure the selected model accommodates diverse data types, the model selection process included both tree-based Random Forest and non-tree models like Lasso and Ridge logistic regression classifiers. This approach minimizes the risk of arbitrary model selection due to unknown relationships between predictors and the target variable. Given the highly imbalanced nature of the dataset, class-weight adjustments were applied to account for the minority class, reducing potential classification bias. These measures enhance the robustness and objectivity of the study results.  
+
+Our findings indicate sufficient predictive performance within the same year, such as in 2018 or 2022, but poor performance across different years, such as using 2018 data to predict 2019 outcomes. This discrepancy may stem from significant variations in opioid-related variables across different states and years. For instance, data from the CDC in the United States demonstrate that the opioid dispensing rate in the United States varies across states and over time. Such changes likely reflect distributional discrepancies (data drift) between the OUD population in the 2018 training set and the 2019 test set, reducing cross-year predictive performance. This effect is more pronounced in the current imbalanced datasets with limited target samples, where minor variations in sample distribution across years can significantly impact model performance. To address this limitation in future studies with larger datasets, incorporating temporal features (e.g., rates of change) and developing year-based stratified models could more effectively capture cross-temporal variations.
+
+Geographic data thereby emerged as an important predictor of variation in the diagnosis of OUD amongst adolescents receiving mental health services and reflected state-by-state differences in policy, economy, and environment. Aggregated patterns at the state level showed similarities in the course of illness while the integration of the U.S. Census provided important contextual information on social determinants and socioeconomic variables explaining the risk of developing OUD. The absence of critical variables such as public health policy changes, intervention efforts, and governance, limited our findings and should be addressed in future research.
+
+Therefore, this model is specific to youth who have accessed mental health services and thus may not be generalized to the broader adolescent population. Future iterations may wish to extend this methodology to include broader population health information. We excluded the substance use diagnosis variables like alcohol, cocaine, or cannabis use in order to minimize bias as these variables are not independent in defining OUD within this dataset.
+
+Even the simplified model, using only individual mental health diagnoses and service utilization variables, achieved highly balanced accuracy without geographic or social determinant data. Apart from geographic factors, mental health conditions, such as, anxiety, depression, and trauma emerged as strong predictors of OUD in adolescents due to the interconnected nature of mental health conditions and substance use. Adolescents with mental health challenges may experience emotional dysregulation, heightened stress, and a lack of coping mechanisms, leading to self-medication behaviors. Opioids, often perceived as quick relief from psychological pain, are more likely to be misused in this vulnerable population. Additionally, trauma \cite{smith2023factors}, such as adverse childhood experiences (ACEs), is strongly linked to increased susceptibility to substance use as a coping strategy, further amplifying the risk of OUD. 
+
+Adolescents benefit from preventive strategies focused on resilience-building and coping skills. Tailoring interventions to the developmental context and life circumstances of each population is crucial for effective prevention and treatment. Our study provides individualized predictions that can be aggregated at various levels to inform targeted, cost-effective prevention programs. This approach enables U.S. local governments to better address the complex interplay between local conditions and OUD risk.
+
+\section{Conclusion}
+Youth receiving mental health services face heightened risks of developing OUD due to complex social, psychological, and environmental challenges. Early detection and intervention are crucial for reducing their vulnerability to substance use disorders. Our model shows great potential to identify the risk of OUD in this group and offer timely support to prevent further advancement of substance use disorders.
+
+Excluding prediction power, our analysis reveals significant geographic variation in OUD prevalence, driven by state policies, economic conditions, and healthcare access. This highlights the need for geographically tailored interventions to ensure equitable resource distribution and effective utilization of resources. Enhancing predictive tools from this study can offer insights to guide government policies in reducing such disparities.
+
+Through embedding advanced analytic into policy making, governments can more effectively identify at-risk populations and design community-level strategies that address the root causes of OUD. This approach holds the promise of addressing inequities in the opioid crisis while empowering healthcare systems to take a more proactive stance. It paves the way for more effective and equitable outcomes for youth navigating mental health challenges and substance use disorders, fostering a fairer and more responsive support network.
+\nocite{*}
+\bibliography{bibliography}
+
+\section{Appendix A}
+
+\setcounter{table}{0}
+\renewcommand{\thetable}{A\arabic{table}}
+
+\subsection{Supplementary Table \ref{table:A1}: All Features and Ranks}
+%\end{multicols}
+%\begin{multicols}{1}
+
+%\newpage
+%\clearpage
+\onecolumn
+\begin{center}
+%\begin{multicols}{1}
+%\begin{tabular}{|c |c |c|} 
+%\begin{longtable}{| c{.10\textwidth} | c{.20\textwidth}| c{.20\textwidth} |} 
+\begin{longtable}{|p{.10\textwidth} |p{.36\textwidth} |p{.54\textwidth} |} 
+%\begin{supertabular}{|c |c |c|}
+ \hline
+ Rank & Features & Description\\ [0.5ex] 
+ \hline\hline
+1 & STATEFIP_11 & District of Columbia\\
+\hline
+2 & STATEFIP_51 & Virginia\\
+\hline
+3 & STATEFIP_72 & Puerto Rico\\
+\hline
+4 & STATEFIP_37 & North Carolina\\
+\hline
+5 & life_expectancy & Life Expectancy\\
+\hline
+6 & STATEFIP_27 & Minnesota\\
+\hline
+7 & STATEFIP_31 & Nebraska\\
+\hline
+8 & STATEFIP_24 & Maryland\\
+\hline
+9 & STATEFIP_25 & Massachusetts\\
+\hline
+10 & STATEFIP_34 & New Jersey\\
+\hline
+11 & STATEFIP_30 & Montana\\
+\hline
+12 & STATEFIP_53 & Washington\\
+\hline
+13 & STATEFIP_8 & Colorado\\
+\hline
+14 & STATEFIP_46 & South Dakota\\
+\hline
+15 & age_persons_under_18_years & Age Distribution of persons under 18 years\\
+\hline
+16 & STATEFIP_44 & Rhode Island\\
+\hline
+17 & STATEFIP_26 & Michigan\\
+\hline
+18 & AGE & Age (recoded)\\
+\hline
+19 & STATEFIP_10 & Delaware\\
+\hline
+20 & median_home_price & Median Home Price\\
+\hline
+21 & STATEFIP_17 & Illinois\\
+\hline
+22 & STATEFIP_1 & Alabama\\
+\hline
+23 & STATEFIP_38 & North Dakota\\
+\hline
+24 & STATEFIP_29 & Missouri\\
+\hline
+25 & age_female_persons & Age Distribution of Female persons\\
+\hline
+26 & STATEFIP_41 & Oregon\\
+\hline
+27 & OPISERVICE & Other psychiatric inpatient\\
+\hline
+28 & racial_composition_hispanic & Racial and Ethnic Composition of Hispanic persons\\
+\hline
+29 & age_median_age & Age Distribution of Median age\\
+\hline
+30 & access_to_healthcare & Access to Healthcare\\
+\hline
+31 & IJSSERVICE & Institutions under the justice system\\
+\hline
+32 & RTCSERVICE & Residential treatment center\\
+\hline
+33 & SPHSERVICE & State psychiatric hospital services\\
+\hline
+34 & STATEFIP_22 & Louisiana\\
+\hline
+35 & mental_health_statistics & Mental Health Statistics\\
+\hline
+36 & STATEFIP_50 & Vermont\\
+\hline
+37 & STATEFIP_36 & New York\\
+\hline
+38 & social_mobility & Social Mobility\\
+\hline
+39 & STATEFIP_5 & Arkansas\\
+\hline
+40 & population_size & Population Size\\
+\hline
+41 & STATEFIP_45 & South Carolina\\
+\hline
+42 & STATEFIP_49 & Utah\\
+\hline
+43 & STATEFIP_18 & Indiana\\
+\hline
+44 & chronic_diseases_obesity & Chronic Disease Prevalence of Obesity\\
+\hline
+45 & homeownership_rate & Homeownership Rate\\
+\hline
+46 & STATEFIP_40 & Oklahoma\\
+\hline
+47 & age_persons_65_years_and_over & Age Distribution of persons 65 years and over\\
+\hline
+48 & STATEFIP_19 & Iowa\\
+\hline
+49 & STATEFIP_55 & Wisconsin\\
+\hline
+50 & gross_state_product_GSP & Gross State Product (GSP)\\
+\hline
+51 & median_household_income & Median Household Income\\
+\hline
+52 & racial_composition_white & Racial and Ethnic Composition of White persons\\
+\hline
+53 & STATEFIP_9 & Connecticut\\
+\hline
+54 & STATEFIP_39 & Ohio\\
+\hline
+55 & racial_composition_black & Racial and Ethnic Composition of Black persons\\
+\hline
+56 & STATEFIP_56 & Wyoming\\
+\hline
+57 & STATEFIP_28 & Mississippi\\
+\hline
+58 & STATEFIP_6 & California\\
+\hline
+59 & tax_burden & Tax Burden\\
+\hline
+60 & STATEFIP_32 & Nevada\\
+\hline
+61 & PERSONFLG & Personality disorder reported\\
+\hline
+62 & per_pupil_spending & Per Pupil Spending\\
+\hline
+63 & BIPOLARFLG & Bipolar disorder reported\\
+\hline
+64 & property_crime_rate & Property Crime Rate\\
+\hline
+65 & chronic_diseases_diabetes & Chronic Disease Prevalence Diabetes\\
+\hline
+66 & ADHDFLG & Attention deficit/hyperactivity disorder reported\\
+\hline
+67 & rent_costs & Rent Costs\\
+\hline
+68 & percentage_with_higher_education & Percentage with Higher Education\\
+\hline
+69 & quality_of_schools & Quality of Schools\\
+\hline
+70 & poverty_rate & Poverty Rate\\
+\hline
+71 & PDDFLG & Pervasive developmental disorder reported\\
+\hline
+72 & STATEFIP_42 & Pennsylvania\\
+\hline
+73 & homelessness_rate & Homelessness Rate\\
+\hline
+74 & CONDUCTFLG & Conduct disorder reported\\
+\hline
+75 & STATEFIP_12 & Florida\\
+\hline
+76 & TRAUSTREFLG & Trauma or stressor related disorder reported\\
+\hline
+77 & SCHIZOFLG & Schizophrenia or other psychotic disorder reported\\
+\hline
+78 & STATEFIP_35 & New Mexico\\
+\hline
+79 & violent_crime_rate & Violent Crime Rate\\
+\hline
+80 & DEPRESSFLG & Depressive disorder reported\\
+\hline
+81 & ANXIETYFLG & Anxiety disorder reported\\
+\hline
+82 & healthcare_costs & Healthcare Costs\\
+\hline
+83 & population_growth_rate & Population Growth Rate\\
+\hline
+84 & unemployment_rate & Unemployment Rate\\
+\hline
+85 & STATEFIP_48 & Texas\\
+\hline
+86 & cost_of_living_index & Cost of Living Index\\
+\hline
+87 & STATEFIP_47 & Tennessee\\
+\hline
+88 & OTHERDISFLG & Other mental disorder reported\\
+\hline
+89 & STATEFIP_16 & Idaho\\
+\hline
+90 & inequality_measures & Inequality Measures\\
+\hline
+91 & ODDFLG & Oppositional defiant disorder reported\\
+\hline
+92 & racial_composition_asian & Racial and Ethnic Composition of Asian persons\\
+\hline
+93 & CMPSERVICE & SMHA-funded/operated community based program\\
+\hline
+94 & STATEFIP_21 & Kentucky\\
+\hline
+95 & high_school_graduation_rate & High School Graduation Rate\\
+\hline
+96 & urbanvsrural_rural & Rural population\\
+\hline
+97 & urbanvsrural_urban & Urban population\\
+\hline
+98 & STATEFIP_15 & Hawaii\\
+\hline
+99 & racial_composition_native & Racial and Ethnic Composition of Native persons\\
+\hline
+\caption{Feature Detail List}
+ \label{table:A1}
+\end{longtable}
+%\end{supertabular}
+%\end{table} 
+%\end{multicols}
+%\end{multicols}
+\end{center}
+\end{document}
