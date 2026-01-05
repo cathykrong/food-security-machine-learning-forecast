@@ -5,7 +5,7 @@
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{caption,subcaption,graphicx,longtable,underscore}
+\usepackage{caption,subcaption,graphicx,longtable,underscore,moreverb}
 %\usepackage{multicol}
 %\usepackage{supertabular,booktabs}
 
@@ -23,34 +23,42 @@
 \title{
 		\usefont{OT1}{bch}{b}{n}
 		\normalfont \normalsize \textsc{STEM Fellowship 2025-2026 High School Big Data Challenge} \\ [10pt]
-		\huge LEVERAGING BIG DATA \& AI TO STRENGTHEN FOOD SECURITY \& PROMOTE SUSTAINABLE AGRICULTURE\\
+		\huge Predicting Food Security Index \& PROMOTE SUSTAINABLE AGRICULTURE\\
 }
 \selectlanguage{english}
 \usepackage{authblk}
 \author[2]{Cathy Rong}
-\author[1]{Arthur Jiang}
-\author[1]{Ren Ghosh}
-\author[1]{Sabrina Qian}
 \author[1]{Safiya Taher}
+\author[1]{Sabrina Qian}
+\author[1]{Renisa Ghosh}
+\author[1]{Arthur Jiang}
 % \author{}
 \affil[1]{Old Scona Academic, Edmonton, Alberta}
 \affil[2]{United World Colleges - Red Cross Nordic, Norway}
 \date{January 9, 2026}
 \setlength {\marginparwidth }{2cm}
 
+%% Count of words
+%%Submit this tex to https://app.uio.no/ifi/texcount/online.php for TeXCount online interface
+
+%% alternate ways
+% \immediate\write18{texcount -nc -inc -sum \jobname.tex> wordcount.tex}
+% \newcommand\wordcount{\verbatiminput{wordcount.tex}}
+
 \begin{document}
 \maketitle
 
 %\begin{multicols}{1}
 \begin{abstract}
-Opioid use disorder (OUD), encompassing opioid dependence and abuse, has risen sharply among US adolescents over the past decade, with its impact varying geographically across states. This retrospective study analyzed geographic, and social determinants, individual mental health diagnoses, and demographic data aiming to explore these inequities. A predictive model for OUD was developed using 99 features from the Mental Health Client Level Data (MH-CLD) dataset and U.S. Census Bureau data.
+Food insecurity remains a persistent challenge, even in high-producing agricultural systems. Timely national-level indicators are needed to support monitoring and policy decisions. This study tests whether U.S. agricultural production signals can predict a composite Food Security Index ($FSI$) derived from food-system outcomes. We constructed an annual United States dataset spanning from 1970 to 2023 that integrates USDA NASS QuickStats measures for three major staple crops, corn, soybeans, and wheat (yield, production, area planted, and area harvested).
 
-Machine learning classification algorithms, such as logistic regression with ridge regularization, LASSO, and random forest, were used to predict OUD. Repeated sampling of balanced classes was implemented to address data imbalance and enhance model performance. The model achieved a specificity of 84\% for 2019 predictions using 2018 training data and a balance accuracy of 86\% for 2022 predictions using late 2022 data. This approach enabled comparisons of pre- and post-pandemic OUD trends.
+The prediction target is an $FSI$ scaled from 0 to 1, where higher values indicate lower food insecurity, constructed through mathematical modeling of four FAOSTAT variables: dietary energy supply, protein supply, GDP per capita, and a food production index. We compared multiple supervised regression models using a fixed split of 1970 to 2012 data for training, and a testing period of 2013 to 2023. We further included a change-based formulation that predicts a year to year change to $FSI$ levels ($\Delta$$FSI$), with engineered shock and lag features.
 
-Feature importance analysis revealed that geographic location was among the most influential predictors. The model supports individualized predictions that can be scaled to inform community-specific health policies and decision-making. This predictive capability provides valuable insights to mitigate the opioid crisis in the U.S. and demonstrates the potential of machine learning as a tool for health planning and policy development.
+A Random Forest model trained on the $\Delta$$FSI$ feature set performed the best, achieving a Root Mean Squared Error (RMSE) of about 0.066 on the 2013-2023 testing data and improving on a persistence baseline. Overall, results showed that the national crop statistics contain measurable predictive signals for annual food security dynamics and motive extensions.
+
 
 \end{abstract}  
-{\textbf{Keywords}: \\ Agriculture, Social Determinants, Prospective Validation}
+{\textbf{Keywords}: \\ Agriculture, Food Security Index, Prospective Validation}
 
 \section{Introduction}
 
@@ -60,28 +68,29 @@ Feature importance analysis revealed that geographic location was among the most
 
 \cite{USDANASS_QuickStats}
 
-Opioid dependence and abuse are critical public health concerns with far-reaching consequences for individuals and society. These disorders not only lead to physical health issues but cause lasting damage to brain function, impairing cognition, behavior, and social interactions, and in severe cases, resulting in death. Addressing the opioid crisis requires targeted prevention strategies, particularly for adolescents, a population often overlooked in research. This pivotal stage of development is characterized by physical, mental, emotional, and cognitive changes  wherein individuals are more vulnerable to substance and opioid misuse. 
+Even in highly productive agricultural systems, food insecurity is still a continuous challenge as national food security depends on more than the total output of crops. Beyond aggregated supply, food security is a reflection on whether or not people can consistently access safe, sufficient, and nutritious food while the system remains stable under shocks. As climate variability, market disruptions, and economic pressures interact, there is an increased interest in timely, interpretable national indicators that can be monitored over long periods in support of decision making.
 
-With the bulk of existing research focusing more on adults , however, adolescent-specific risk factors are less understood. Mental health disorders like bipolar disorder, which heightens impulsivity and risk-taking  are common in adolescence and may increase the risk of opioid dependence.  Environmental influences, including peer relationships, geographic location, community dynamics, socioeconomic status, and other contextual variables further shape adolescents’ susceptibility to opioid abuse. Understanding these environmental factors can help pinpoint the most critical determinants, offering insights into the environmental and social drivers of adolescent opioid abuse. This investigation into the relationship between mental health and other factors is essential for developing substance abuse prevention strategies for adolescents. 
-
-Machine learning is a robust tool in addressing these complexities, able to analyze large datasets and interactions among variables and medical conditions as well as well-suited for identifying risk factors and classifying diseases. In this study, we utilized Mental Health Client Level Data (MH-CLD) and U.S. census data to examine adolescent opioid abuse, mental health conditions, and social factors. By cleaning, normalizing, and synthesizing these datasets, we trained and tested machine-learning models using multi-year data. This approach aims to uncover the most significant risk factors for adolescent opioid dependence and abuse.
+Agricultural production is one of the most consistently measured national variables. In the United States, corn, soybeans, and wheat are especially well documented as they dominate staple crop production and influence downstream food and feed markets. Yearly changes in yield, acreage, and total production have the potential to capture biophysical constraints and economic land-use responses. However, directly linking production to national food security outcomes is not straightforward; food security also depends on economic access, supply chains, and broader macro conditions, which introduce nonlinear relationships and time-lagged effects.
 
 \section{Materials \& Methods}
 
-\subsection{Study Cohort}
-This study utilized individual-level mental health data collected from 2013 to 2022 using the MH-CLD dataset, which is comprehensively composed of demographic, clinical, and outcome data for individuals receiving services from state mental health agencies in the United States during a state-defined 12-month reporting period. The dataset includes information on individuals who accessed mental health support services such as screening, crisis services, and telemedicine programs offered or funded by the U.S. government during the specified time frame.
+\subsection{Data and Study Design}
+We evaluated whether or not national staple crop production can predict a composite Food Security Index ($FSI$) for the United States (U.S.) using an annual time series (1970-2023). Three different crop predictors were compiled from the United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) Quickstats: corn, soybeans, and wheat, including yield, production, and harvested area for each crop (N=1,944). The prediction target was an $FSI$ scaled to [0, 1], where a higher value signaled better food security, computed from four different components derived from the Food and Agriculture Organization Corporate Statistical (FAOSTAT) Database: dietary energy supply (kcal/capita/day), protein supply (g/capita/day), GDP per capita, and a food production index.
 
-For this analysis, we focused on individuals aged 12 to 17 years, a critical developmental stage for identifying mental health and substance use disorders, including opioid use disorder (OUD). The study cohort consisted of 921,725 clients from the 2018 database with 660 OUD cases and 1,031,799 clients from the 2022 database with 1,892 OUD cases. These two-time points were chosen to enable a comparative analysis of OUD prediction trends before and after the onset of the COVID-19 pandemic, allowing for an examination of potential mental health service utilization shifts and outcomes influenced by the pandemic.
+In addition to crop exclusive statistics, we included a set of exogenous drivers to capture broader conditions that can influence food security and crop performance. U.S. food-price conditions were represented using a food Consumer Price Index (CPI) index and its derived annual change. The World Bank Commodity Price Data (“Pink Sheet”) indices (Energy, Agriculture, Food, Grains, Fertilizers, Metals \& Minerals) and selected commodity price series (crude oil, maize, soybeans, and U.S. wheat prices: Hard Red Winter, HRW, and Soft Red Winter, SRW) acted as global input and commodity pressures.
 
-\subsection{Study Features and Target Outcome}
-The study features included data on mental health diagnoses, demographic characteristics, utilization of mental health facilities, and co-occurring substance use-related conditions. The primary target outcome variable was OUD, encompassing opioid dependence and abuse, reflecting the growing public health concern over opioid misuse and its associated societal and clinical implications.
+All raw datasets were first restricted to the United States and then converted to annual values and merged by year to form a single master table. Non-numeric values were treated as missing and excluded only when required for the given model fit to maintain a consistent predictor-target alignment. The resulting dataset was then used for feature engineering (lags and year-over-year “shock” variables) and model evaluation under time-respecting train/test splits.
 
-In addition to individual-level data, the dataset also included geographic information such as state, division, and region. To enrich the analysis we incorporated supplementary data (32 features) from external sources such as the U.S. Census Bureau datasets and other publicly available regional databases. These sources provided background information for each 50 states, including population demographics, economic indicators, employment rates, poverty levels, crime statistics, and population health statistics. This contextual data enabled a more comprehensive understanding of the social, financial, and health-related factors potentially influencing OUD trends.
 
-By integrating these diverse datasets, the study aimed to provide a robust framework for analyzing OUD prediction and its variation across different geographic and demographic contexts, with particular emphasis on changes observed before and after the COVID-19 pandemic.
+\subsection{Targets and Feature Engineering}
+We tested two prediction formulations: level and change-based. In the level formulation, models predict $FSI(t)$ directly, where $FSI(t)$ denotes the $FSI$ in year t. In the change based formulation, models predict annual change $\Delta FSI(t) = FSI(t) - FSI(t-1)$ and reconstruct levels via $FSI(t) = FSI(t-1) + \Delta FSI(t)$. Where this year’s predicted $FSI$ equals last year’s $FSI$ plus the model’s predicted change this year. Predictors included crop indicators (yield, production, and area harvested for corn, soybeans, and wheat) as well as exogenous variables in a climate and economic context.
 
-\subsection{Sample Derivation}
-The study sample was derived as follows: the training datasets were created using the 2018 (N=645,207,70\%) and 2022 data (N=505,582,49\%). For validation, 30\% of the 2018 data and 21\% of the 2022 data were randomly selected to serve as validation datasets. For testing, the 2019 dataset was used to test the model built on the 2018 data, while 30\% of the 2022 dataset was used to test the model. Figure \ref{fig:1} presents the flow chart for the machine learning model, including the data integration and model validation.
+To capture disruptions and delayed effects, we manually created shock features and lags for all time-varying predictors. Shocks were computed on a year by year basis as changes .(percentage changes for strictly positive variables) We also included 1 to 2 year lags of both raw and shocked level terms. This design allows our model to learn immediate versus delayed associations between production, external conditions, and changes in national food security.
+
+\subsection{Performance Metrics}
+Predictive accuracy on held-out years was measured using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and $R^2$ values, reported in relevance to the persistence baseline. For the second formulation, the change-based formulation, we assessed directional performance additionally by classifying whether $\Delta FSI$ was bigger than 0 and then computing a confusion matrix and balanced accuracy along with it. Receiver Operating Characteristic Area Under the Curve (ROC AUC) and average precision were also calculated using the changed, predicted scores.
+
+Figure \ref{fig:1} presents the flow chart for the machine learning model, including the data integration and model validation.
 
 \begin{figure}
     \centering
@@ -284,10 +293,12 @@ Youth receiving mental health services face heightened risks of developing OUD d
 Excluding prediction power, our analysis reveals significant geographic variation in OUD prevalence, driven by state policies, economic conditions, and healthcare access. This highlights the need for geographically tailored interventions to ensure equitable resource distribution and effective utilization of resources. Enhancing predictive tools from this study can offer insights to guide government policies in reducing such disparities.
 
 Through embedding advanced analytic into policy making, governments can more effectively identify at-risk populations and design community-level strategies that address the root causes of OUD. This approach holds the promise of addressing inequities in the opioid crisis while empowering healthcare systems to take a more proactive stance. It paves the way for more effective and equitable outcomes for youth navigating mental health challenges and substance use disorders, fostering a fairer and more responsive support network.
+
 \nocite{*}
 
 \section*{Acknowledgements}
-The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. CR would like to thank Government of Alberta - Grant MacEwan UWC Scholarship support for studying in UWC-RCN and participating HSBDC. 
+The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. CR would like to thank Government of Alberta - Grant MacEwan UWC Scholarship support for studying in UWC-RCN and participating HSBDC. 
+
 
 \bibliography{bibliography}
 
@@ -324,4 +335,12 @@ The team would like to thank the support from Dr. Jianshan Chen in University of
 %\end{multicols}
 %\end{multicols}
 \end{center}
+
+% %TC:ignore  
+
+% \subsubsection*{Counts of words} 
+% \wordcount
+
+% %TC:endignore 
+
 \end{document}
