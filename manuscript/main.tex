@@ -5,7 +5,7 @@
 \usepackage[english]{babel}
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{caption,subcaption,graphicx,longtable,underscore,moreverb}
+\usepackage{caption,subcaption,graphicx,longtable,underscore,moreverb,booktabs}
 %\usepackage{multicol}
 %\usepackage{supertabular,booktabs}
 
@@ -34,7 +34,7 @@
 \author[1]{Arthur Jiang}
 % \author{}
 \affil[1]{Old Scona Academic, Edmonton, Alberta}
-\affil[2]{United World Colleges - Red Cross Nordic, Norway}
+\affil[2]{United World Colleges Red Cross Nordic, Norway}
 \date{January 9, 2026}
 \setlength {\marginparwidth }{2cm}
 
@@ -62,30 +62,72 @@ A Random Forest model trained on the $\Delta$$FSI$ feature set performed the bes
 
 \section{Introduction}
 
+Even in highly productive agricultural systems, food insecurity is still a continuous challenge as national food security depends on more than the total output of crops. Beyond aggregated supply, food security is a reflection on whether or not people can consistently access safe, sufficient, and nutritious food while the system remains stable under shocks. As climate variability, market disruptions, and economic pressures interact, there is an increased interest in timely, interpretable national indicators that can be monitored over long periods in support of decision making.
+
+Agricultural production is one of the most consistently measured national variables. In the United States, corn, soybeans, and wheat are especially well documented as they dominate staple crop production and influence downstream food and feed markets. Yearly changes in yield, acreage, and total production have the potential to capture biophysical constraints and economic land-use responses. However, directly linking production to national food security outcomes is not straightforward; food security also depends on economic access, supply chains, and broader macro conditions, which introduce nonlinear relationships and time-lagged effects.
+
+We created a composite food security index (FSI), computed from four different components derived from the Food and Agriculture Organization Corporate Statistical (FAOSTAT) Database: dietary energy supply (kcal/capita/day), protein supply (g/capita/day), GDP per capita, and a food production index, to act as a summary measure score intended to track how “food-secure” the country is each year by using a series of macro indicators that are consistently available over longer time spans. It is a proxy for overall food security conditions rather than a measure for household hunger. Dietary energy supply provides information on food availability in the national supply; protein supply shows a diet quality or adequacy dimension to the mix, considering beyond calories; GDP per capita is used widely as a macro proxy for economic access and affordability where the higher the income, the higher the ability to purchase food, buffer price shocks, etc (generally) ; finally, the food production index is a broad domestic production availability signal by tracking the volume or value of edible, nutritious food crops relative to a base period.
+
+This idea came from reviewing past composite food indices also built by selecting indicators and then normalizing and aggregating them. For example, the Global Food Security Index (GFSI) considers multiple indicators (food affordability, availability, quality and safety, sustainability and adaptation) over 113 different countries. \cite{GFSI2022} These past indexes inspired us to create our FSI as a defensible, simple, and transparent measure, tailored reliably to what we are trying to solve.
+
 \cite{justin_oh_2023, worldbank2021, worldbank2015}, \cite{FAOSTATindicator}, \cite {Varshita2024, Salles-Costa2022, GeorgeAM_2022}
 
 \cite{akinniyi2024}, \cite{Salles-Costa2022}, \cite{worldbank2025}, \cite{GeorgeAM_2022}, \cite{owidagriprod}
 
 \cite{USDANASS_QuickStats}
 
-Even in highly productive agricultural systems, food insecurity is still a continuous challenge as national food security depends on more than the total output of crops. Beyond aggregated supply, food security is a reflection on whether or not people can consistently access safe, sufficient, and nutritious food while the system remains stable under shocks. As climate variability, market disruptions, and economic pressures interact, there is an increased interest in timely, interpretable national indicators that can be monitored over long periods in support of decision making.
-
-Agricultural production is one of the most consistently measured national variables. In the United States, corn, soybeans, and wheat are especially well documented as they dominate staple crop production and influence downstream food and feed markets. Yearly changes in yield, acreage, and total production have the potential to capture biophysical constraints and economic land-use responses. However, directly linking production to national food security outcomes is not straightforward; food security also depends on economic access, supply chains, and broader macro conditions, which introduce nonlinear relationships and time-lagged effects.
-
 \section{Materials \& Methods}
 
 \subsection{Data and Study Design}
-We evaluated whether or not national staple crop production can predict a composite Food Security Index ($FSI$) for the United States (U.S.) using an annual time series (1970-2023). Three different crop predictors were compiled from the United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) Quickstats: corn, soybeans, and wheat, including yield, production, and harvested area for each crop (N=1,944). The prediction target was an $FSI$ scaled to [0, 1], where a higher value signaled better food security, computed from four different components derived from the Food and Agriculture Organization Corporate Statistical (FAOSTAT) Database: dietary energy supply (kcal/capita/day), protein supply (g/capita/day), GDP per capita, and a food production index.
+We evaluated whether or not national staple crop production can predict a composite FSI for the United States (U.S.) using an annual time series (1970-2023). Three different crop predictors were compiled from the United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) Quickstats: corn, soybeans, and wheat, including yield, production, and harvested area for each crop (N=1,944). The prediction target was an FSI scaled to [0, 1], where a higher value signaled better food security.
 
 In addition to crop exclusive statistics, we included a set of exogenous drivers to capture broader conditions that can influence food security and crop performance. U.S. food-price conditions were represented using a food Consumer Price Index (CPI) index and its derived annual change. The World Bank Commodity Price Data (“Pink Sheet”) indices (Energy, Agriculture, Food, Grains, Fertilizers, Metals \& Minerals) and selected commodity price series (crude oil, maize, soybeans, and U.S. wheat prices: Hard Red Winter, HRW, and Soft Red Winter, SRW) acted as global input and commodity pressures.
 
 All raw datasets were first restricted to the United States and then converted to annual values and merged by year to form a single master table. Non-numeric values were treated as missing and excluded only when required for the given model fit to maintain a consistent predictor-target alignment. The resulting dataset was then used for feature engineering (lags and year-over-year “shock” variables) and model evaluation under time-respecting train/test splits.
 
+\subsection{Data Preparation}
+The data preparation process was conducted using Python 3.11 \cite{python11} with the scikit-learn library \cite{pedregosa2011scikit} for predictive modeling. The primary mental health features included diagnoses such as ADHD, anxiety, depressive disorder, oppositional defiant disorder (ODD), pervasive developmental disorder (PDD), conduct disorder, bipolar disorder, schizophrenia, and other mental health conditions. All variables, except for the count of mental health diagnoses, were numerical.
+
+Demographic features including age group, sex, state, race, and ethnicity, were categorical and were one-hot encoded into binary variables. Substance use diagnosis variables provided outcome information and included major conditions such as opioid, alcohol, cannabis, cocaine, and other substance-related disorders. Figure \ref{fig:2} summarizes the descriptive information of the 2018 cohort. Background features such as population size, economy, education, income information, and so on were derived from external datasets (detailed in Supplementary Table \ref{table:A1}).
+%\end{multicols}
+%\begin{multicols}{1}
+%\end{multicols}
+%\begin{multicols}{1}
+To ensure consistent scaling across variables with different units, all continuous features were normalized using the StandardScaler from scikit-learn's preprocessing package. This normalization improved the comparability of features and optimized model performance.
 
 \subsection{Targets and Feature Engineering}
-We tested two prediction formulations: level and change-based. In the level formulation, models predict $FSI(t)$ directly, where $FSI(t)$ denotes the $FSI$ in year t. In the change based formulation, models predict annual change $\Delta FSI(t) = FSI(t) - FSI(t-1)$ and reconstruct levels via $FSI(t) = FSI(t-1) + \Delta FSI(t)$. Where this year’s predicted $FSI$ equals last year’s $FSI$ plus the model’s predicted change this year. Predictors included crop indicators (yield, production, and area harvested for corn, soybeans, and wheat) as well as exogenous variables in a climate and economic context.
+We created the FSI in multiple steps. For FSI(t), we defined it as a single number between 0 and 1 for each year t, where the higher the value, the better food security (lower insecurity). We built it off of four annual national indicators:
+\begin{enumerate}
+\item K(t): Dietary energy supply (kcal per capita per day)
+\item P(t): Protein supply (g per capita per day)
+\item G(t): GDP per capita (USD) 
+\item F(t): Food production index
+\end{enumerate}
+
+
+Because these four variables have different units and ranges, we first normalized each one to the same [0, 1] scale as the final FSI over our full study cohort of 1970-2023, making them directly comparable. By using min-max normalization:
+
+$$X_{\text{norm}}(t) = \frac{X(t) - \min(X)}{\max(X) - \min(X)}$$
+
+for $$X \in \{K, P, G, F\}$$
+
+Each component lies in a range of [0,1] after this.
+
+Secondly, we combined all four components into one index by equal-weighted arithmetic mean. This is because we did not set any weights to any of the components, making all of them of equal importance to one another.
+
+$$FSI(t) = $$
+$$\frac{K_{\text{norm}}(t)+P_{\text{norm}}(t)+G_{\text{norm}}(t)+F_{\text{norm}}(t)}{4}$$
+
+This, in turn, makes FSI(t) a value within [0,1], where a higher FSI value corresponds to stronger food security conditions, by our composite definition. At the same time, a drop in FSI would signify a deterioration driven by one or more components declining in relevance to their historical range.
+
+While FSI provides an interpretable annual picture, its strong persistence over time reflects the idea that forecasting will be easier in year-to-year change increments rather than absolute levels. Therefore, we tested two prediction formulations: level and change-based. In the level formulation, models predict $FSI(t)$ directly, where $FSI(t)$ denotes the $FSI$ in year t. In the change based formulation, models predict annual change $\Delta FSI(t) = FSI(t) - FSI(t-1)$ and reconstruct levels via $FSI^\prime(t) = FSI(t-1) + \Delta FSI^\prime(t)$. Where this year's predicted $FSI$ equals last year's $FSI$ plus the model's predicted change this year. The $FSI^\prime$ means that value is a predicted $FSI$. Predictors included crop indicators (yield, production, and area harvested for corn, soybeans, and wheat) as well as exogenous variables in a climate and economic context.
 
 To capture disruptions and delayed effects, we manually created shock features and lags for all time-varying predictors. Shocks were computed on a year by year basis as changes .(percentage changes for strictly positive variables) We also included 1 to 2 year lags of both raw and shocked level terms. This design allows our model to learn immediate versus delayed associations between production, external conditions, and changes in national food security.
+
+\subsection{Model Selection and Evaluation}
+To accurately test whether or not all of the predictors could contain a usable signal for food security, we employed multiple supervised machine learning regression models to predict for our $FSI$. The model had a time-respective training and testing data split where 1970 to 2012 data was used for training and 2013 to 2023 data was used for testing. The model was benchmarked against a persistent baseline that forecasts the next year's value.
+
+We compared a small set of regression models to test, each with different strengths. These included a regularized Ridge regression linear model as well as a non linear Random Forest regression ensemble model. The Ridge model provides a transparent benchmark that handles all correlated predictors through regularization; the Random Forest model can help capture non-linear interactions between variables without requiring a separate fixed functional form. To evaluate which model allowed for easier forecasting, our two formulation processes were used, and the best-performing approach was selected based on predictive accuracy and the held-on test period
 
 \subsection{Performance Metrics}
 Predictive accuracy on held-out years was measured using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and $R^2$ values, reported in relevance to the persistence baseline. For the second formulation, the change-based formulation, we assessed directional performance additionally by classifying whether $\Delta FSI$ was bigger than 0 and then computing a confusion matrix and balanced accuracy along with it. Receiver Operating Characteristic Area Under the Curve (ROC AUC) and average precision were also calculated using the changed, predicted scores.
@@ -101,71 +143,49 @@ Figure \ref{fig:1} presents the flow chart for the machine learning model, inclu
 
 Notably, the MH-CLD data does not link individual case IDs across years, ensuring that cases are not traceable longitudinally. To minimize bias and maintain model integrity, no OUD data were included in the features. This approach ensured a clean separation of training, validation, and testing data to support robust model development and evaluation.
 
-\begin{figure*}
-    \centering
-    \includegraphics[width=1\textwidth]{fig1_confusion_matrix.png}
-    \caption{Confustion Matrix}
-    \label{fig:2}
-\end{figure*}
+    % % \begin{figure*}
+    % %     \centering
+    % %     \begin{subfigure}[b]{0.45\textwidth}
+    % %         \centering
+    % %         \includegraphics[width=\textwidth]{Figure3a.png}
+    % %         \caption[]%
+    % %         {{\small Substance Use Problem}}    
+    % %         \label{fig:3a}
+    % %     \end{subfigure}
+    % %     \hfill
+    % %     \begin{subfigure}[b]{0.45\textwidth}  
+    % %         \centering 
+    % %         \includegraphics[width=\textwidth]{Figure3b.png}
+    % %         \caption[]%
+    % %         {{\small Anxiety}}    
+    % %         \label{fig:3b}
+    % %     \end{subfigure}
+    % %     \vskip\baselineskip
+    % %     \begin{subfigure}[b]{0.45\textwidth}   
+    % %         \centering 
+    % %         \includegraphics[width=\textwidth]{Figure3c.png}
+    % %         \caption[]%
+    % %         {{\small Depression Disorder}}    
+    % %         \label{fig:3c}
+    % %     \end{subfigure}
+    % %     \hfill
+    % %     \begin{subfigure}[b]{0.45\textwidth}   
+    % %         \centering 
+    % %         \includegraphics[width=\textwidth]{Figure3d.png}
+    % %         \caption[]%
+    % %         {{\small Trauma}}    
+    % %         \label{fig:3d}
+    % %     \end{subfigure}
+    % %     \caption[  ]
+    % %     {\small Prevalence Trend of Youth Mental Health Cases} 
+    % %     \label{fig:3}
+    % % \end{figure*}
 
-\begin{figure*}
-   \centering
-   \includegraphics[width=1\linewidth]{fig2_timeseries_actual_pred_persist.png}
-   \caption{Comparision of different prediction methods}
-   \label{fig:3}
-\end{figure*}
-    % \begin{figure*}
-    %     \centering
-    %     \begin{subfigure}[b]{0.45\textwidth}
-    %         \centering
-    %         \includegraphics[width=\textwidth]{Figure3a.png}
-    %         \caption[]%
-    %         {{\small Substance Use Problem}}    
-    %         \label{fig:3a}
-    %     \end{subfigure}
-    %     \hfill
-    %     \begin{subfigure}[b]{0.45\textwidth}  
-    %         \centering 
-    %         \includegraphics[width=\textwidth]{Figure3b.png}
-    %         \caption[]%
-    %         {{\small Anxiety}}    
-    %         \label{fig:3b}
-    %     \end{subfigure}
-    %     \vskip\baselineskip
-    %     \begin{subfigure}[b]{0.45\textwidth}   
-    %         \centering 
-    %         \includegraphics[width=\textwidth]{Figure3c.png}
-    %         \caption[]%
-    %         {{\small Depression Disorder}}    
-    %         \label{fig:3c}
-    %     \end{subfigure}
-    %     \hfill
-    %     \begin{subfigure}[b]{0.45\textwidth}   
-    %         \centering 
-    %         \includegraphics[width=\textwidth]{Figure3d.png}
-    %         \caption[]%
-    %         {{\small Trauma}}    
-    %         \label{fig:3d}
-    %     \end{subfigure}
-    %     \caption[  ]
-    %     {\small Prevalence Trend of Youth Mental Health Cases} 
-    %     \label{fig:3}
-    % \end{figure*}
-
-\subsection{Data Preparation}
-The data preparation process was conducted using Python 3.11 \cite{python11} with the scikit-learn library \cite{pedregosa2011scikit} for predictive modeling. The primary mental health features included diagnoses such as ADHD, anxiety, depressive disorder, oppositional defiant disorder (ODD), pervasive developmental disorder (PDD), conduct disorder, bipolar disorder, schizophrenia, and other mental health conditions. All variables, except for the count of mental health diagnoses, were numerical.
-
-Demographic features including age group, sex, state, race, and ethnicity, were categorical and were one-hot encoded into binary variables. Substance use diagnosis variables provided outcome information and included major conditions such as opioid, alcohol, cannabis, cocaine, and other substance-related disorders. Figure \ref{fig:2} summarizes the descriptive information of the 2018 cohort. Background features such as population size, economy, education, income information, and so on were derived from external datasets (detailed in Supplementary Table \ref{table:A1}).
-%\end{multicols}
-%\begin{multicols}{1}
-%\end{multicols}
-%\begin{multicols}{1}
-To ensure consistent scaling across variables with different units, all continuous features were normalized using the StandardScaler from scikit-learn's preprocessing package. This normalization improved the comparability of features and optimized model performance.
 
 \subsection{Model Selection and Evaluation}
 The COVID-19 pandemic has led to varying social and environmental conditions across different periods, particularly from 2020 to 2022. These changes can influence model performance, making it challenging to generalize findings from pre-pandemic data, such as 2018, to the pandemic era. To address this, we first trained the model on the 2018 data and tested it on the 2019 dataset. This approach helps evaluate the model's performance in a pre-pandemic context. Additionally, we trained and tested the model exclusively using the 2022 data to account for the relatively stable social factors specific to that period during the pandemic. Evaluating the model on both pre-pandemic (2018 and 2019) and post-pandemic (2022) data aimed to determine whether the key risk factors contributing to OUD were consistent across different personal, social, and environmental contexts. 
 
-For the 2018 data and 70\% of 2022 data (30\% holding for testing), the dataset was split into a 70\%/30\% ratio using stratified sampling to address the class imbalance, ensuring that the proportion of subjects with opioid use disorder was consistent in both the training and validation sets. A logistic regression and Lasso model from the scikit-learn library were employed with balanced class weights configured to account for the unequal distribution of outcomes. To ensure robust performance evaluation, we repeated the training and validation process 10 times. The final model is built based on an ensemble model by averaging out each iteration’s coefficients. Performance metrics, including sensitivity, specificity, balanced accuracy, and the area under the receiver operating characteristic curve (ROC-AUC) were used to provide a comprehensive assessment of the model's performance. Feature importance was also calculated to identify key predictors. The model was then tested with the 2019 data and the rest of the 2022 data. This allowed us to assess the machine learning algorithms' generalization in the pre- and post-pandemic period.
+For the 2018 data and 70\% of 2022 data (30\% holding for testing), the dataset was split into a 70\%/30\% ratio using stratified sampling to address the class imbalance, ensuring that the proportion of subjects with opioid use disorder was consistent in both the training and validation sets. A logistic regression and Lasso model from the scikit-learn library were employed with balanced class weights configured to account for the unequal distribution of outcomes. To ensure robust performance evaluation, we repeated the training and validation process 10 times. The final model is built based on an ensemble model by averaging out each iteration's coefficients. Performance metrics, including sensitivity, specificity, balanced accuracy, and the area under the receiver operating characteristic curve (ROC-AUC) were used to provide a comprehensive assessment of the model's performance. Feature importance was also calculated to identify key predictors. The model was then tested with the 2019 data and the rest of the 2022 data. This allowed us to assess the machine learning algorithms' generalization in the pre- and post-pandemic period.
 
 \subsection{Assessing Feature Importance}
 
@@ -173,14 +193,33 @@ The importance of features for predicting OUD was evaluated based on the model c
 
 \section{Results}
 
-\subsection{Visualizing Trends of Youth Mental Health Prevalence}
-Figure \ref{fig:3} illustrates the trends in mental health diagnoses over the past decade, spanning from 2013 to 2022. The analysis focuses exclusively on conditions demonstrating an upward trend, including substance use problems (\ref{fig:3a}), anxiety disorders (\ref{fig:3b}), depressive disorders (\ref{fig:3c}), and trauma-related (\ref{fig:3d}) conditions. Other mental health conditions were presenting either a downward trend or insufficient trending, rendering them less significant for this analysis. 
+Through national staple-crop statistics and exogenous economic indicators, we evaluated the predictive perforation of the proposed Ridge and Random Forest models for estimating food security in the United States. In this section, we see how well our models predict U.S. food security in the held-out period and what signals drive said predictions. 
 
-Figure \ref{fig:4} presents geospatial heat maps from QGIS \cite{QGIS} illustrating life expectancy  (\ref{fig:4a}), rent costs  (\ref{fig:4b}), actual OUD cases in 2019  (\ref{fig:4c}), and predicted cases using Logistic Regression  (\ref{fig:4d}). The heat maps for life expectancy and rent costs reveal clusters of hot and cold spots predominantly along coastal regions, particularly in the western US and New England. These patterns align with certain hotspots observed in the heat map of actual OUD cases. Moreover, the heat map of predicted cases highlights the improved performance of the machine-learning model.
+According to the results across the tested models, the Random Forest model, trained on $\Delta FSI$, was selected as the primary approach as it provided the most reliable out-of-sample tracking of FSI relative to the alternative models and our persistence baseline. Therefore, we present the results from the Random Forest model first, followed by diagnostics and an auxiliary directional evaluation.
 
-\begin{figure}
+\begin{figure*}
+    \centering
+    \includegraphics[width=1\textwidth]{fig2_timeseries_actual_pred_persist.png}
+    \caption{Observed vs Predicted $\Delta FSI$ Over Time: Random Forest vs Persistence (2013-2023)}
+    \label{fig:2}
+\end{figure*}
+
+Figure \ref{fig:2} shows a comparison between the observed FSI in the 2013 to 2023 test period and the predictions from the Random Forest model trained on annual changes ($\Delta FSI$). In addition, a persistence baseline that simply carries forward the previous FSI (FSI(t-1)) is also compared. We set the y-axis to start at 0.60, rather than 0, to focus on the 2013-2023 range and make small but meaningful differences between the observed FSI, model predictions, and the persistence baseline easier to see. Overall, the Random Forest model is able to forecast patterns following the same broad trajectory as the observed series, including a mid-decade decline and substantial rise right after 2017. This suggests that the model captures meaningful year by year movements rather than only the trend in the long run. The persistence baseline also helps track the general direction; however, it responds more slowly to turning points because it assumes that there has been no change beyond last year's level. Differences between predicted and observed curves are most visible around the sharper transitions, where the model either slightly over or underestimates the magnitude of change. But, the close alignment across the vast majority of the years shows that crop and “shock and lag” features contain usable signals for national food-security dynamics.
+
+Figure \ref{fig:3} plots the same test-year values as Figure \ref{fig:2}, but collapses them into point pairs where each dot is one year with the x-axis being the observed FSI and the y-axis as the predicted FSI. Points closer to the line of best fit means better agreement. In our test set, our predictions are aligned with the observations with a correlation value of around 0.82, with 6 out of 11 years falling within 0.05 of the true value and 4 out of 11 within 0.02. Similarly to Figure 1, the largest mismatches occur in the volatile years: 2017 being one as it is underpredicted. 
+
+Figure \ref{fig:2} is a time-series story which shows whether the model follows a yearly trajectory with turning points compared to a persistence baseline. On the other hand, Figure \ref{fig:3} is a calibration, or fit, check as it ignores ordering in time and visualizes how close predictions in our model are to the correct values overall. 
+
+\begin{figure*}
    \centering
    \includegraphics[width=1\linewidth]{fig3_scatter_pred_vs_actual.png}
+   \caption{Predicted vs Observed FSI in the Test Period (2013-2023)}
+   \label{fig:3}
+\end{figure*}
+
+\begin{figure*}
+   \centering
+   \includegraphics[width=1\linewidth]{fig4_residuals_over_time.png}
 %\captionsetup[subfigure]{labelformat=empty}
 %     \begin{subfigure}[b]{0.5\textwidth}
 %     \centering
@@ -206,44 +245,57 @@ Figure \ref{fig:4} presents geospatial heat maps from QGIS \cite{QGIS} illustrat
 %     \caption{2019 Predicted OUD}
 %         \label{fig:4d}
 %         \end{subfigure}
-    \caption{Scatter plots between Actual and Predicted data for 2013-2023}
+    \caption{Residuals Over Time (Observed - Predicted FSI), 2013-2023}
     \label{fig:4}
-\end{figure}
+\end{figure*}
 
-\subsection{Model Performance}
-OUD was most effectively predicted using a logistic regression classification algorithm (Ridge classifier) compared with the LASSO, a regression technique that performs both feature selection and regularization by shrinking less important feature coefficients to zero, helping simplify models and preventing overfitting, classifier, and Random Forest classifier (See Figure \ref{fig:5}). Logistic regression achieved a balanced accuracy of 76.6\%, compared to 76.5\% for LASSO and 61.0\% for Random Forest.
+Figure \ref{fig:4} shows the residual of the model, an annual year-by-year prediction error in the testing period. This is defined by the equation: $r(t)=FSI_{\text{actual}}(t)-FSI_{\text{pred}}(t)$. Positive results indicate underprediction, where the observed FSI was higher than the estimation made by the model, while negative residuals indicate overpredication. The centre line at Residual = 0 means that there is “no error” where the model predicted the FSI exactly for that year. Across 2013 to 2023, residuals are generally small and only fluctuate around zero, where the mean residual is about +0.016 and the median is around -0.016. This suggests that the model is not consistently biased in one signal direction over the entire testing window.
 
-On the 2018 validation data, the ensembled logistic model achieved a balanced accuracy of 73\%, with a sensitivity of 75\% and specificity of 71\% with an area under the curve (AUC) of 0.81. For the 2019 testing data, the model demonstrated a balanced accuracy of 50\%, with a sensitivity of 16\% and specificity of 84\%. On the 2022 testing data, the model achieved a balanced accuracy of 86\%, sensitivity of 84\%, and specificity of 87\%. The model has an area under the curve (AUC) of 0.82. The ROC curves (\ref{fig:6a}, \ref{fig:7a}) and confusion matrix (\ref{fig:6b}, \ref{fig:7b}) plots for both the 2019 testing data and 2022 validation data are presented in Figures \ref{fig:6} and \ref{fig:7}, respectively.
+However, the plot also shows the years that drive most of the error. The largest underprediction occurs in 2017, where the residual is +0.150, with an actual FSI value of 0.738 and a predicted value of 0.588. The largest overprediction happens in 2016, with a residual of -0.108 and a split of 0.599 as the actual values versus the predicted 0.707. These spikes cluster in the sharp transitions in the FSI trajectory, further showing that the model struggles to adapt when food security shifts abruptly. Overall, the residual pattern supports the interpretation that our model is able to track gradual movement well but extreme changes still remain the biggest hardships.
 
-\begin{figure}
+
+\begin{figure*}
     \centering
-    \includegraphics[width=1\linewidth]{fig4_residuals_over_time.png}
-    \caption{Residual plot over time period 2013-2023}
+    \includegraphics[width=1\linewidth]{fig7_feature_importance_top15.png}
+    \caption{Top 15 Feature Importances: Random Forest $\Delta FSI$}
     \label{fig:5}
-\end{figure}
+\end{figure*}
 
-\begin{figure}
-%\captionsetup[subfigure]{labelformat=empty}
-%     \begin{subfigure}[b]{0.5\textwidth}
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{Figure6a.png}
-%   \caption{ROC curve for 2018 Training model}
-%     \label{fig:6a}
-%     \end{subfigure}
-%     \begin{subfigure}[b]{0.5\textwidth}
-%     \centering
-%     \includegraphics[width=0.75\textwidth]{Figure6b.png}
-%   \caption{Confusion Matrix on 2019 Testing Data}
-%     \label{fig:6b}
-%     \end{subfigure}
+Figure \ref{fig:5} shows which predictors the Random Forest model relied on the most when forecasting $\Delta FSI$. This importance ranking is dominated by production-side crop variables and short-term temporal structure, especially on the wheat and corn warians. The most influential predictor was “wheat harvested area (t-1)” with an importance of around 0.064, followed closely by “corn yield (level)” at around 0.060. Other high ranking features are also lagged crop quantities such as “wheat product (t--2)” ($\approx$ 0.040), “wheat yield (t-2)” ($\approx$ 0.036), and “wheat production (t-1)” ($\approx$ 0.030). This indicates that the model draws heavily on one to two year delayed information rather than contemporaneous levels. This means that lag features (labels such as t-1 and t-2) are simply predictor values that are taken from previous years, allowing the model to capture delayed effects where impacts on food security unfold over time.
+
+In addition, shock-style variables also appear repeatedly. Features labeled with “(YoY \%)” are a representation of year by year percent change, meaning how much a variable has increased or decreased compared to the previous year. In Figure 4, these YoY \% are the shock variables to help the model distinguish between short-run departures and typical conditions. The appearance of “soybeans yield (YoY \%)” ($\approx$ 0.033), “soybeans production (YoY \%)” ($\approx$ 0.029), and “corn yield (YoY \%)” ($\approx$ 0.026) among the top predictors suggests that year by year sudden changes do contain useful signal for changes in national food security.
+
+Finally, market price factors also contribute but do not dominate: “U.S. wheat price (SRW) (YoY \%)” ($\approx$ 0.024), “maize price (YoY \%)” ($\approx$ 0.019), and “U.S. wheat price (HRW)” (YoY \%) ($\approx$ 0.016) are included in the top 15, which implies that these commodity-price shocks help provide an additional contest beyond production volumes. Most importantly, these reflect predictive contributions rather than just casual effects. Figure \ref{fig:5} indicates which variables were most useful in reducing prediction error when the Random Forest learned patterns $\Delta FSI$.
+
+\begin{table*}[h]
     \centering
-    \includegraphics[width=1\linewidth]{fig5_residual_hist.png}
-    fig6_roc_bootstrap10
-    \caption{Histogram of Residual Errors}
-    \label{fig:6}
-\end{figure}
+    \caption{Shock-Lag Sensitivity Analysis for the Random Forest $\Delta FSI$ Model (Test: 2013-2023)}
+    \label{tab:model_results}
+    \resizebox{\textwidth}{!}{% <--- Start the resizebox command
+        \begin{tabular}{@{}l c c c c c c c@{}}
+            \toprule
+            \textbf{Configuration} & \textbf{Shocks} & \textbf{Lag depth} & \textbf{Lagged shocks} & \textbf{RMSE} & \textbf{MAE} & $\mathbf{R^2}$ & \textbf{Balanced accuracy} \\ 
+            \midrule
+            Persistence baseline & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & 0.0699 & 0.0554 & 0.6443 & \\
+            (FSI(t)=FSI(t-1)) & & & & & & & \\
+            \addlinespace
+            Shocks + lag1+lag2 (no lagged shocks) & On & 2 & Off & 0.0701 & 0.0509 & 0.6419 & 0.7143 \\
+            Shocks + lag1+lag2 & On & 2 & On & 0.0704 & 0.0497 & 0.6393 & 0.7143 \\
+            Shocks + lag1 & On & 1 & On & 0.0712 & 0.0517 & 0.6308 & 0.6429 \\
+            \addlinespace
+            No shocks + no lags & Off & 0 & Off & 0.0788 & 0.0646 & 0.5478 & 0.5 \\
+            Shocks only & On & 0 & Off & 0.0791 & 0.0592 & 0.5438 & 0.6429 \\
+            Lag1 only & Off & 1 & Off & 0.0809 & 0.071 & 0.5227 & 0.5 \\
+            \bottomrule
+        \end{tabular}% <--- End the tabular environment
+    }% <--- End the resizebox command
+\end{table*}
 
-\begin{figure}
+Table \ref{tab:model_results} shows how sensitive the Random Forest $\Delta FSI$ model is to the way we encoded short-run disruptions and delayed effects in our predictors. We varied two feature types: our shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps isolate whether the model benefits more from immediate year by year changes, historical memory, or both.
+
+The pattern is evident: accuracy suffers when temporal structure is removed, but accuracy is consistently improved when shocks are combined with short lags. Error increases significantly (RMSE 0.0788, $\mathbf{R^2}$ 0.5478) when both shocks and lags are eliminated ("no shocks + no lags"), and the use of only shocks or only lags stays weak (RMSE 0.0791 and 0.0809, respectively). On the other hand, when shocks and lags are combined, error is significantly reduced and performance approaches the persistence benchmark (RMSE 0.0699). Shocks + lag1+lag2 (no lagged shocks) is the grid's best-performing configuration (RMSE 0.0701, MAE 0.0509, $\mathbf{R^2}$ 0.6419), and lag2 shock setups also enhance directional performance (balanced accuracy 0.7143). Overall, Table 1 demonstrates that the model best captures the dynamics of national food security when it can learn from both YoY shocks and 1-2 year delayed effects rather than just static levels alone.
+
+\begin{figure*}
 %\captionsetup[subfigure]{labelformat=empty}
 %     \begin{subfigure}[b]{0.5\textwidth}
 %     \centering
@@ -260,22 +312,36 @@ On the 2018 validation data, the ensembled logistic model achieved a balanced ac
 %     \end{subfigure}
     \centering
     \includegraphics[width=1\linewidth]{fig6_roc_bootstrap10.png}
-    \caption{ROC curve for 2022 Training model}
+    \caption{ROC Curve and Confusion Matrix for Predicting $\Delta FSI$ > 0}
     \label{fig:7}
-\end{figure}
+\end{figure*}
+
+\begin{figure*}
+%\captionsetup[subfigure]{labelformat=empty}
+%     \begin{subfigure}[b]{0.5\textwidth}
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{Figure7a.png}
+%   \caption[justification=centering]%
+%       {{\small ROC curve for 2022 Training model}}    
+%     \label{fig:7a}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.5\textwidth}
+%     \centering
+%     \includegraphics[width=0.75\textwidth]{Figure7b.png}
+%   \caption{Confusion Matrix on 2022 Testing Data}
+%     \label{fig:7b}
+%     \end{subfigure}
+    \centering
+    \includegraphics[width=1\linewidth]{fig1_confusion_matrix.png}
+    \caption{Confusion matrix $\Delta FSI$ > 0}
+    \label{fig:8}
+\end{figure*}
 
 \subsection{Feature Importance}
 
 Figure \ref{fig:8} presents the top 15 dominant features in the 2018 and 2022 datasets using the logistic regression classifier. The absolute values of the coefficients indicate feature importance with higher absolute values signifying greater importance. The sign of the coefficients reflects the direction of the association with OUD; positive values indicate increased risk while negative values suggest protective effects. For instance, living in the District of Columbia, Puerto Rico, or North Carolina is associated with lower OUD incidence whereas residing in Virginia, Maryland, or Minnesota corresponds to a higher risk.
 
 Two social determinants positively associated with OUD were identified: life expectancy and the percentage of children in the state. Notably, there were no significant changes in the coefficients or feature rankings between 2018 and 2022. The complete list of all features with ranking can be found in Supplementary Table \ref{table:A1}.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{fig7_feature_importance_top15.png}
-    \caption{Top 15 most important features for 2018 and 2022 testing data using Logistic Regression}
-    \label{fig:8}
-\end{figure}
 
 \section{Discussion}
 Our analysis yielded the logistic regression classifier with ridge regularization as the best in predicting OUD. This classifier demonstrated strong performance in identifying OUD cases in 2018 and 2022, achieving satisfactory specificity even in 2019 despite slightly lower other results. Consistent geographic factors were identified as top predictors across 2018 and 2022, underscoring the significant impact of local geographic variations on the risk of SUD. 
