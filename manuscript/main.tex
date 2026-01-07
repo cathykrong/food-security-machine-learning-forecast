@@ -44,8 +44,8 @@
 %%Submit this tex to https://app.uio.no/ifi/texcount/online.php for TeXCount online interface
 
 %% alternate ways
-% \immediate\write18{texcount -nc -inc -sum \jobname.tex> wordcount.tex}
-% \newcommand\wordcount{\verbatiminput{wordcount.tex}}
+% \immediate\write18{texcount -nc -inc -sum -nosub -q \jobname.tex> wordcount.txt}
+% \newcommand{\wordcount}{\verbatiminput{wordcount.tex}}
 
 \newcommand{\CorrAuthor}{%
   \large \textit{Corresponding author(s):}\\
@@ -53,7 +53,9 @@
   \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
 %   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
 }
-\newcommand{\WordCount}{\large \textit{\\Word count (excluding figures, tables, references, and title page):} 4275} % excluding figures, tables, references, and title page
+\newcommand{\WordCount}{\large \textit{\\Word count (excluding figures, tables, references, and title page):} 
+4491}
+% \verbatiminput{wordcount.txt}} % excluding figures, tables, references, and title page
 
 \begin{document}
 
@@ -94,6 +96,14 @@ This idea came from reviewing past composite food indices also built by selectin
 \section{Materials \& Methods}
 
 \subsection{Data and Study Design}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=1\linewidth]{fig1.png}
+    \caption{Study Flow Chart}
+    \label{fig:1}
+\end{figure*}
+
 We evaluated whether or not national staple crop production can predict a composite FSI for the United States (U.S.) using an annual time series (1970-2023) \cite{justin_oh_2023, owidagriprod}. Three different crop predictors were compiled from the United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) Quickstats: corn, soybeans, and wheat, including yield, production, and harvested area for each crop (N=1,944) \cite{FAOSTATindicator, USDANASS_QuickStats}. The prediction target was an FSI scaled to [0, 1], where a higher value signaled better food security.
 
 In addition to crop exclusive statistics, we included a set of exogenous drivers to capture broader conditions that can influence food security and crop performance. U.S. food-price conditions were represented using a food Consumer Price Index (CPI) index and its derived annual change. The World Bank Commodity Price Data (“Pink Sheet”) indices (Energy, Agriculture, Food, Grains, Fertilizers, Metals \& Minerals) and selected commodity price series (crude oil, maize, soybeans, and U.S. wheat prices: Hard Red Winter, HRW, and Soft Red Winter, SRW) acted as global input and commodity pressures.
@@ -101,13 +111,6 @@ In addition to crop exclusive statistics, we included a set of exogenous drivers
 All raw datasets were first restricted to the United States and then converted to annual values and merged by year to form a single master table. Non-numeric values were treated as missing and excluded only when required for the given model fit to maintain a consistent predictor-target alignment. The resulting dataset was then used for feature engineering (lags and year-over-year “shock” variables) and model evaluation under time-respecting train/test splits.
 
 Figure \ref{fig:1} presents the flow chart for the machine learning model, including the data integration and model validation.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=1\linewidth]{fig1.png}
-    \caption{Study Flow Chart}
-    \label{fig:1}
-\end{figure}
 
 Notably, to minimize bias and maintain model integrity, no state data from QuickStats were included in the features. This approach ensured a clean separation of training, validation, and testing data to support robust model development and evaluation with the whole US context.
 
