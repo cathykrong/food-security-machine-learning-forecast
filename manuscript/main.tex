@@ -30,14 +30,13 @@
 \selectlanguage{english}
 \usepackage{authblk}
 \author[1, 2]{Cathy Rong\thanks{Corresponding author: \href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com}}}
-\author[1]{Safiya Taher
-\thanks{Corresponding author: \href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com}}
-}
+\author[1]{Safiya Taher}
+% \author[1]{Safiya Taher \thanks{Corresponding author: \href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com}}}
 \author[1]{Sabrina Qian}
 \author[1]{Renisa Ghosh}
 \author[1]{Arthur Jiang}
 \affil[1]{Old Scona Academic, Edmonton, Alberta, Canada}
-\affil[2]{United World Colleges Red Cross Nordic, Flekke, Norway}
+\affil[2]{United World Colleges Red Cross Nordic, Flekke, Vestland, Norway}
 \date{January 9, 2026}
 \setlength {\marginparwidth }{2cm}
 
@@ -48,24 +47,13 @@
 % \immediate\write18{texcount -nc -inc -sum \jobname.tex> wordcount.tex}
 % \newcommand\wordcount{\verbatiminput{wordcount.tex}}
 
-% \newcommand{\Myauthor}{%
-%   Cathy Rong  \textsuperscript{1,2},
-%   Safiya Taher\textsuperscript{2},
-%   Sabrina Qian\textsuperscript{1},
-%   Renisa Ghosh\textsuperscript{1},
-%   Arthur Jiang\textsuperscript{1}
-% }
-% \newcommand{\Affils}{%
-% \textsuperscript{1}\ Old Scona Academic, Edmonton, Alberta, Canada\\
-% \textsuperscript{2}\ United World Colleges Red Cross Nordic, Flekke, Norway\\
-% }
 \newcommand{\CorrAuthor}{%
-  \textit{Corresponding author(s):}\\
-  Cathy Rong   (\href{cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
-  Safiya Taher (\href{cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
+  \large \textit{Corresponding author(s):}\\
+\\
+  \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
+%   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
 }
-\newcommand{\WordCount}{4275} % excluding figures, tables, references, and title page
-
+\newcommand{\WordCount}{\large \textit{\\Word count (excluding figures, tables, references, and title page):} 4275} % excluding figures, tables, references, and title page
 
 \begin{document}
 
@@ -73,35 +61,13 @@
   \renewcommand\thanks[1]{}
   \maketitle
   \vspace{3em}
-  \CorrAuthor
-  \vspace{1.2em}
-  \noindent\textit{Word count (excluding figures, tables, references, and title page):} \WordCount
+  \noindent\CorrAuthor
+  \vspace{5em}
+  \WordCount
   \thispagestyle{empty}
 \end{titlepage}
 
-% \begin{titlepage}
-%   \thispagestyle{empty}
-%   \centering
-%   {\LARGE\bfseries\thetitle\par}
-%   \vspace{1.2em}
-%   {\normalsize \Myauthor \par}
-% %   {\large Cathy Rong\textsuperscript{1,2},\quad Safiya Taher\textsuperscript{1},\quad Sabrina Qian\textsuperscript{1},\quad Renisa Ghosh\textsuperscript{1},\quad Arthur Jiang\textsuperscript{1}\par}
-%   \vspace{3em}
-%   \begin{flushleft}
-%     \textbf{Affiliations}\par
-%     \Affils
-%   \end{flushleft}
-%   \vspace{3em}
-%   \CorrAuthor
-%   \vspace{3em}
-%   \textit{Word count (excluding figures, tables, references, and title page):} \WordCount
-%   \vfill
-% \end{titlepage}
-
-% \begingroup
-% \renewcommand\thanks[1]{}
-\maketitle
-% \endgroup
+% \maketitle
 
 %\begin{multicols}{1}
 \begin{abstract}
