@@ -47,51 +47,55 @@
 % \immediate\write18{texcount -nc -inc -sum -nosub -q \jobname.tex> wordcount.txt}
 % \newcommand{\wordcount}{\verbatiminput{wordcount.tex}}
 
-\newcommand{\CorrAuthor}{%
-  \large \textit{Corresponding author(s):}\\
-\\
-  \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
-%   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
-}
-\newcommand{\WordCount}{\large \textit{\\Word count (excluding figures, tables, references, and title page):} 
-4455}
-% \verbatiminput{wordcount.txt}} % excluding figures, tables, references, and title page
+% \newcommand{\CorrAuthor}{%
+%   \large \textit{Corresponding author(s):}\\
+% \\
+%   \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
+% %   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
+% }
+\newcommand{\WordCount}{\textit{Word Count (excluding figures, tables, references, and title page):} 4079}
+% \verbatiminput{wordcount.txt}}  %  (excluding figures, tables, references, and title page)
 
 \begin{document}
 
-\begin{titlepage}
-  \renewcommand\thanks[1]{}
-  \maketitle
-  \vspace{3em}
-  \noindent\CorrAuthor
-  \vspace{5em}
-  \WordCount
-  \thispagestyle{empty}
-\end{titlepage}
+% \begin{titlepage}
+%   \renewcommand\thanks[1]{}
+%   \maketitle
+%   \vspace{3em}
+%   \noindent\CorrAuthor
+%   \vspace{5em}
+%   \large \WordCount
+%   \thispagestyle{empty}
+% \end{titlepage}
 
-% \maketitle
+\maketitle
+
+\begingroup
+\renewcommand\thefootnote{}
+\footnote{\WordCount}
+\addtocounter{footnote}{-1}
+\endgroup
 
 %\begin{multicols}{1}
 \begin{abstract}
-Food insecurity remains a persistent challenge, even in high-producing agricultural systems. Timely national-level indicators are needed to support monitoring and policy decisions. This study tests whether U.S. agricultural production signals can predict a composite Food Security Index ($FSI$) derived from food-system outcomes. We constructed an annual United States dataset spanning from 1970 to 2023 that integrates USDA NASS QuickStats measures for three major staple crops, corn, soybeans, and wheat (yield, production, area planted, and area harvested).
+Food insecurity persists even in high-output agricultural systems, underscoring the need for timely national indicators. This study tests whether U.S. agricultural production signals can predict a composite Food Security Index ($FSI$) using an annual dataset (1970-2023) integrating USDA NASS QuickStats measures for three major staple crops: corn, soybeans, and wheat (yield, production, area planted, and area harvested).
 
-The prediction target is an $FSI$ scaled from 0 to 1, where higher values indicate lower food insecurity, constructed through mathematical modeling of four FAOSTAT variables: dietary energy supply, protein supply, GDP per capita, and a food production index. We compared multiple supervised regression models using a fixed split of 1970 to 2012 data for training, and a testing period of 2013 to 2023. We further included a change-based formulation that predicts a year to year change to $FSI$ levels ($\Delta$$FSI$), with engineered shock and lag features.
+The prediction target is an $FSI$ scaled $[0,1]$ (higher = more food secure) constructed from four FAOSTAT variables: dietary energy supply, protein supply, GDP per capita, and a food production index. We compared multiple supervised regression models with training on 1970-2012 and testing on 2013-2023 data. We further included a year to year change ($\Delta$$FSI$), with engineered shock \& lag features. A Random Forest model trained on the $\Delta$$FSI$ feature set performed the best, testing Root Mean Squared Error (RMSE) $\approx 0.066$, and improving on a persistence baseline.
 
-A Random Forest model trained on the $\Delta$$FSI$ feature set performed the best, achieving a Root Mean Squared Error (RMSE) of about 0.066 on the 2013-2023 testing data and improving on a persistence baseline. Overall, results showed that the national crop statistics contain measurable predictive signals for annual food security dynamics and motive extensions.
-
+Overall, results showed that the national crop statistics contain measurable predictive indicators for annual food security dynamics and motive extensions.
 
 \end{abstract}  
-{\textbf{Keywords}: \\ Agriculture, Food Security Index, ............}
+{\textbf{Keywords}: \\ Agriculture, Food Security Index, Machine Learning}
 
 \section{Introduction}
 
-Even in highly productive agricultural systems, food insecurity is still a continuous challenge as national food security depends on more than the total output of crops \cite{Long2020} . Beyond aggregated supply, food security is a reflection on whether or not people can consistently access safe, sufficient, and nutritious food while the system remains stable under shocks \cite{Kavallari2014}. As climate variability \cite{Beach2010}, market disruptions \cite{Barnichon2022}, and economic pressures interact, there is an increased interest in timely, interpretable national indicators that can be monitored over long periods in support of decision making. \cite{Hatfield2011}
+Food insecurity persists even in highly productive agricultural systems because national food security depends on more than total crop output \cite{Long2020}. It also depends on whether people can reliably access safe, sufficient, nutritious food and whether the system remains resilient to shocks \cite{Kavallari2014}. With climate variability \cite{Beach2010}, market disruptions \cite{Barnichon2022}, and economic pressures increasingly interacting, there is growing demand for timely, interpretable national indicators that can be tracked consistently over long periods to support decision making \cite{Hatfield2011}.
 
-Agricultural production is one of the most consistently measured national variables. In the United States, corn, soybeans, and wheat are especially well documented as they dominate staple crop production and influence downstream food and feed markets \cite{WinnePeersman2016, Kreitzman2020}. Yearly changes in yield, acreage, and total production have the potential to capture biophysical constraints and economic land-use responses. However, directly linking production to national food security outcomes is not straightforward; food security also depends on economic access \cite{Manap2019}, supply chains \cite{Nava2023, Smith2007}, and broader macro conditions, which introduce nonlinear relationships and time-lagged effects.
+Agricultural production is among the most consistently measured national variables. In the United States, corn, soybeans, and wheat are especially well documented because they dominate staple crop production and shape downstream food and feed markets \cite{WinnePeersman2016, Kreitzman2020}. Annual changes in yields, acreage, and output can reflect both biophysical constraints and land-use responses. However, production alone does not map cleanly onto national food security outcomes: access and affordability \cite{Manap2019}, supply chains \cite{Nava2023, Smith2007}, and broader macro conditions introduce nonlinearities and time-lagged effects.
 
-We created a composite food security index ($FSI$), computed from four different components derived from the Food and Agriculture Organization Corporate Statistical (FAOSTAT) Database \cite{FAOSTATindicator}: dietary energy supply (kcal/capita/day), protein supply (g/capita/day), GDP per capita, and a food production index, to act as a summary measure score intended to track how “food-secure” the country is each year by using a series of macro indicators that are consistently available over longer time spans. It is a proxy for overall food security conditions rather than a measure for household hunger. Dietary energy supply provides information on food availability in the national supply \cite{NUBE20011275}; protein supply shows a diet quality or adequacy dimension to the mix, considering beyond calories \cite{Henchion2017}; GDP per capita is used widely as a macro proxy for economic access and affordability where the higher the income, the higher the ability to purchase food, buffer price shocks, etc (generally) \cite{Warr2014}; finally, the food production index is a broad domestic production availability signal by tracking the volume or value of edible, nutritious food crops relative to a base period \cite{Bozkurt2021}.
+Researchers have developed multiple food-security indicators to reflect food security's multifaceted nature. The Global Food Security Index (GFSI) \cite{GFSI2022, akinniyi2024}, for example, assesses 113 countries using measures of affordability, availability, quality and safety, and sustainability/adaptation, offering a defensible, simple, and transparent basis for agricultural policymaking \cite{Bibi2023, Salles-Costa2022}.
 
-This idea came from reviewing past composite food indices also built by selecting indicators and then normalizing and aggregating them. For example, the Global Food Security Index (GFSI) considers multiple indicators (food affordability, availability, quality and safety, sustainability and adaptation) over 113 different countries. \cite{GFSI2022, Bibi2023, Salles-Costa2022, akinniyi2024} These past indexes inspired us to create our $FSI$ as a defensible, simple, and transparent measure, tailored reliably to what we are trying to solve.
+In this study, a composite Food Security Index ($FSI$) is developped for US agricultural system using four Food and Agriculture Organization of the UN's corporate statistical database (FAOSTAT) indicators \cite{FAOSTATindicator}: dietary energy supply, protein supply, GDP per capita, and the food production index. This macro summary score tracks year-to-year national food security with long-run consistent data and serves as a proxy for overall conditions (not household hunger). Energy supply represents availability \cite{NUBE20011275}, protein supply reflects dietary adequacy \cite{Henchion2017}, GDP per capita captures economic access \cite{Warr2014}, and the production index indicates domestic supply relative to a base period \cite{Bozkurt2021}.
 
 \section{Materials \& Methods}
 
@@ -104,22 +108,16 @@ This idea came from reviewing past composite food indices also built by selectin
     \label{fig:1}
 \end{figure*}
 
-We evaluated whether or not national staple crop production can predict a composite $FSI$ for the United States (U.S.) using an annual time series (1970-2023) \cite{justin_oh_2023, owidagriprod}. Three different crop predictors were compiled from the United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) Quickstats: corn, soybeans, and wheat, including yield, production, and harvested area for each crop (N=1,944) \cite{FAOSTATindicator, USDANASS_QuickStats}. The prediction target was an $FSI$ scaled to [0, 1], where a higher value signaled better food security.
+We assessed whether U.S. staple-crop production predicts a composite food security index ($FSI$) using an annual time series from 1970-2023 \cite{justin_oh_2023, owidagriprod}. Crop predictors were drawn from United States Department of Agriculture (USDA) National Agricultural Statistics Service (NASS) QuickStats for corn, soybeans, and wheat, including yield, total production, and harvested area for each crop (N=1,944) \cite{USDANASS_QuickStats}. The response variable was an $FSI$ scaled to $[0,1]$, with higher values indicating better food security.
 
-In addition to crop exclusive statistics, we included a set of exogenous drivers to capture broader conditions that can influence food security and crop performance. U.S. food-price conditions were represented using a food Consumer Price Index (CPI) index and its derived annual change. The World Bank Commodity Price Data (“Pink Sheet”) indices (Energy, Agriculture, Food, Grains, Fertilizers, Metals \& Minerals) and selected commodity price series (crude oil, maize, soybeans, and U.S. wheat prices: Hard Red Winter, HRW, and Soft Red Winter, SRW) acted as global input and commodity pressures.
+In addition to crop exclusive statistics, we included exogenous drivers: a food Consumer Price Index (CPI) and its annual change, World Bank “Pink Sheet” indices (Energy, Agriculture, Food, Grains, Fertilizers, Metals \& Minerals) and selected commodity prices (crude oil, maize, soybeans, and wheat—Hard Red Winter and Soft Red Winter) \cite{FAOSTATindicator}. All datasets were restricted to the U.S., aggregated to annual values, and merged by year into a master table; non-numeric entries were treated as missing and dropped only when required for model fitting to preserve predictor-target alignment. The resulting dataset was then used for feature engineering (lags and year-over-year “shock” variables) and model evaluation using time-ordered train/test splits.
 
-All raw datasets were first restricted to the United States and then converted to annual values and merged by year to form a single master table. Non-numeric values were treated as missing and excluded only when required for the given model fit to maintain a consistent predictor-target alignment. The resulting dataset was then used for feature engineering (lags and year-over-year “shock” variables) and model evaluation under time-respecting train/test splits.
-
-Figure \ref{fig:1} presents the flow chart for the machine learning model, including the data integration and model validation.
-
-Notably, to minimize bias and maintain model integrity, no state data from QuickStats were included in the features. This approach ensured a clean separation of training, validation, and testing data to support robust model development and evaluation with the whole US context.
+Figure \ref{fig:1} summarizes the end-to-end flow (data integration through validation). To reduce bias and prevent leakage, we excluded state-level QuickStats features, ensuring model development and evaluation reflected the national U.S. context.
 
 \subsection{Data Preparation}
-We used the USDA NASS QuickStats API to extract our crop predictors \cite{USDANASS_QuickStats}. Specifically, we sent requests that filtered records to U.S level, annual observations and targeted our three staple commodities (corn, soybeans, and wheat) as well as the required measures (yield, production, and area harvested). Each request was run through a Python code using the library 'requests' to call the API and saved each metric into its own structured dataset in CSV form. In addition, we downloaded exogenous series from the U.S. Bureau of Labor Statistics (CPI) \cite{Varshita2024}, the World Bank Commodity Price Data (“Pink Sheet”) \cite{worldbank2015, worldbank2025} was used for indices and commodity prices and U.S. population totals from the World Bank population series.
+Crop predictors were retrieved via the USDA NASS QuickStats API \cite{USDANASS_QuickStats} by querying U.S.-level annual records for corn, soybeans, and wheat and extracting yield, production, and harvested area. API calls were executed in Python using the \texttt{requests} library, and each metric was saved as a structured CSV. Exogenous series were obtained from the U.S. Bureau of Labor Statistics (food CPI) \cite{Varshita2024}, the World Bank Commodity Price Data (“Pink Sheet”) for indices and commodity prices \cite{worldbank2021, worldbank2015, worldbank2025}, and World Bank population totals.
 
-Data cleaning and restructuring were also performed in Python \cite{python11}, using the 'pandas' \cite{pandas_reback2020} and 'NumPy' \cite{numpy_harris2020array} libraries for parsing, value conversion, reshaping, merging, and feature engineering (shock and lag value calculation). For consistency across all sources, all non-numeric values were dropped when required for a given model fit. In addition, we also used 'pathlib' \cite{pathlib} for file handling, and 'scikit-learn' utilities \cite{pedregosa2011scikit} to support model-ready preprocessing in our workflow. All of the cleaned series were then reshaped into a year-indexed table, at one row per year, and merged with the constructed $FSI$ and exogenous predictors to create the final modeling dataset spanning from 1970 to 2023.
-
-To ensure consistent scaling across variables with different units, all continuous features were normalized using the StandardScaler from scikit-learn's preprocessing package. This normalization improved the comparability of features and optimized model performance.
+All preprocessing was performed in Python \cite{python11} using \texttt{pandas} \cite{pandas_reback2020} and \texttt{NumPy} \cite{numpy_harris2020array} for parsing, numeric conversion, reshaping, merging, and feature engineering (lag and shock variables). Non-numeric entries were treated as missing and removed only when required for model fitting; \texttt{pathlib} supported file handling \cite{pathlib}, and scikit-learn utilities supported model-ready preprocessing \cite{pedregosa2011scikit}. Cleaned series were aggregated to one row per year and merged with the constructed $FSI$ and exogenous predictors to form the final 1970-2023 modeling dataset. Continuous features were standardized using scikit-learn’s \texttt{StandardScaler} to improve comparability across units and optimize model performance.
 
 \subsection{Targets and Feature Engineering}
 We created the $FSI$ in multiple steps. For $FSI(t)$, we defined it as a single number between 0 and 1 for each year t, where the higher the value, the better food security (lower insecurity). We built it off of four annual national indicators:
@@ -129,7 +127,6 @@ We created the $FSI$ in multiple steps. For $FSI(t)$, we defined it as a single 
 \item G(t): GDP per capita (USD) 
 \item F(t): Food production index
 \end{enumerate}
-
 
 Because these four variables have different units and ranges, we first normalized each one to the same [0, 1] scale as the final $FSI$ over our full study cohort of 1970-2023, making them directly comparable. By using min-max normalization:
 
@@ -321,7 +318,8 @@ Even in a high-producing agricultural system, such as the United States, nationa
 \nocite{*}
 
 \section*{Acknowledgements}
-The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. We would also like to thank STEM Fellowship for providing us the opportunity to participate in the HSBDC. 
+The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. 
+% We would also like to thank STEM Fellowship for providing us the opportunity to participate in the HSBDC. 
 
 
 \bibliography{bibliography}
