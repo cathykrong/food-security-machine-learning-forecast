@@ -53,7 +53,13 @@
 %   \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
 % %   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
 % }
-\newcommand{\WordCount}{\textit{Word Count (excluding figures, tables, references, and title page):} 4079}
+\newcommand{\WordCountfootnote}{
+\begingroup
+\renewcommand\thefootnote{}
+\footnote{\textit{Word Count (excluding figures, tables, references, and title page):} 4079}
+\addtocounter{footnote}{-1}
+\endgroup
+}
 % \verbatiminput{wordcount.txt}}  %  (excluding figures, tables, references, and title page)
 
 \begin{document}
@@ -70,11 +76,7 @@
 
 \maketitle
 
-\begingroup
-\renewcommand\thefootnote{}
-\footnote{\WordCount}
-\addtocounter{footnote}{-1}
-\endgroup
+
 
 %\begin{multicols}{1}
 \begin{abstract}
@@ -85,7 +87,8 @@ The prediction target is an $FSI$ scaled $[0,1]$ (higher = more food secure) con
 Overall, results showed that the national crop statistics contain measurable predictive indicators for annual food security dynamics and motive extensions.
 
 \end{abstract}  
-{\textbf{Keywords}: \\ Agriculture, Food Security Index, Machine Learning}
+{\textbf{Keywords}: \\ 
+Agriculture, Food Security Index, Machine Learning}\WordCountfootnote
 
 \section{Introduction}
 
@@ -95,7 +98,7 @@ Agricultural production is among the most consistently measured national variabl
 
 Researchers have developed multiple food-security indicators to reflect food security's multifaceted nature. The Global Food Security Index (GFSI) \cite{GFSI2022, akinniyi2024}, for example, assesses 113 countries using measures of affordability, availability, quality and safety, and sustainability/adaptation, offering a defensible, simple, and transparent basis for agricultural policymaking \cite{Bibi2023, Salles-Costa2022}.
 
-In this study, a composite Food Security Index ($FSI$) is developped for US agricultural system using four Food and Agriculture Organization of the UN's corporate statistical database (FAOSTAT) indicators \cite{FAOSTATindicator}: dietary energy supply, protein supply, GDP per capita, and the food production index. This macro summary score tracks year-to-year national food security with long-run consistent data and serves as a proxy for overall conditions (not household hunger). Energy supply represents availability \cite{NUBE20011275}, protein supply reflects dietary adequacy \cite{Henchion2017}, GDP per capita captures economic access \cite{Warr2014}, and the production index indicates domestic supply relative to a base period \cite{Bozkurt2021}.
+In this study, a composite Food Security Index ($FSI$) is developped for US agricultural system using four Food and Agriculture Organization of the UN's corporate statistical database (FAOSTAT) indicators \cite{FAOSTATindicator}: the food production index, dietary energy supply, GDP per capita, and temperature change on land. This macro summary score tracks year-to-year national food security with long-run consistent data and serves as a proxy for overall conditions (not household hunger). The production index indicates domestic supply availability \cite{NUBE20011275}, dietary energy supply reflects dietary adequacy (quality) \cite{Henchion2017}, GDP per capita captures economic access for affordability \cite{Warr2014}, and temperature change on land represents sustainability in a period \cite{Bozkurt2021}.
 
 \section{Materials \& Methods}
 
@@ -115,71 +118,77 @@ In addition to crop exclusive statistics, we included exogenous drivers: a food 
 Figure \ref{fig:1} summarizes the end-to-end flow (data integration through validation). To reduce bias and prevent leakage, we excluded state-level QuickStats features, ensuring model development and evaluation reflected the national U.S. context.
 
 \subsection{Data Preparation}
-Crop predictors were retrieved via the USDA NASS QuickStats API \cite{USDANASS_QuickStats} by querying U.S.-level annual records for corn, soybeans, and wheat and extracting yield, production, and harvested area. API calls were executed in Python using the \texttt{requests} library, and each metric was saved as a structured CSV. Exogenous series were obtained from the U.S. Bureau of Labor Statistics (food CPI) \cite{Varshita2024}, the World Bank Commodity Price Data (“Pink Sheet”) for indices and commodity prices \cite{worldbank2021, worldbank2015, worldbank2025}, and World Bank population totals.
+Crop predictors were retrieved via the USDA NASS QuickStats API \cite{USDANASS_QuickStats} by querying U.S.-level annual records for corn, soybeans, and wheat and extracting yield, production, and harvested area. API calls were executed in Python using the \texttt{requests} library, and each metric was saved as a structured CSV. Exogenous series were obtained from the U.S. Bureau of Labor Statistics (food CPI) \cite{Varshita2024}, the World Bank Commodity Price Data (“Pink Sheet”) for indices and commodity prices \cite{worldbank2015, worldbank2025}, and World Bank population totals.
 
 All preprocessing was performed in Python \cite{python11} using \texttt{pandas} \cite{pandas_reback2020} and \texttt{NumPy} \cite{numpy_harris2020array} for parsing, numeric conversion, reshaping, merging, and feature engineering (lag and shock variables). Non-numeric entries were treated as missing and removed only when required for model fitting; \texttt{pathlib} supported file handling \cite{pathlib}, and scikit-learn utilities supported model-ready preprocessing \cite{pedregosa2011scikit}. Cleaned series were aggregated to one row per year and merged with the constructed $FSI$ and exogenous predictors to form the final 1970-2023 modeling dataset. Continuous features were standardized using scikit-learn’s \texttt{StandardScaler} to improve comparability across units and optimize model performance.
 
 \subsection{Targets and Feature Engineering}
-We created the $FSI$ in multiple steps. For $FSI(t)$, we defined it as a single number between 0 and 1 for each year t, where the higher the value, the better food security (lower insecurity). We built it off of four annual national indicators:
+% We created the $\Delta FSI$ in multiple steps. For $FSI(t)$, we defined it as a single number between 0 and 1 for each year t, where the higher the value, the better food security (lower insecurity). We built it FROM four annual national indicators:
+We construct an annual composite Food Security Index, $FSI(t)\in[0,1]$, where higher values indicate better food security. The index is based on four national indicators:
 \begin{enumerate}
-\item K(t): Dietary energy supply (kcal per capita per day)
-\item P(t): Protein supply (g per capita per day)
-\item G(t): GDP per capita (USD) 
 \item F(t): Food production index
+\item K(t): Dietary energy supply (kcal per capita per day)
+\item G(t): GDP per capita (USD) 
+\item P(t): Temperature change on land (\textdegree{}C)
 \end{enumerate}
 
-Because these four variables have different units and ranges, we first normalized each one to the same [0, 1] scale as the final $FSI$ over our full study cohort of 1970-2023, making them directly comparable. By using min-max normalization:
+To make components comparable, each series is min-max normalized to $[0,1]$ using the 1970-2012 training period:
+% Because these four variables have different units and ranges, we first normalized each one to the same [0, 1] scale as the final $FSI$ over our full training cohort of 1970-2012, making them directly comparable. By using min-max normalization:
 
 $$X_{\text{norm}}(t) = \frac{X(t) - \min(X)}{\max(X) - \min(X)}$$
 
-for $$X \in \{K, P, G, F\}$$
+for $$X \in \{F, K, G, P\}$$
 
 Each component lies in a range of [0,1] after this.
 
-Secondly, we combined all four components into one index by equal-weighted arithmetic mean. This is because we did not set any weights to any of the components, making all of them of equal importance to one another.
+Secondly, we combined all four components into one index by geometrical mean. This is because we try to avoid one pillar masking another and penalize low scores.
 
 $$FSI(t) = $$
-$$\frac{K_{\text{norm}}(t)+P_{\text{norm}}(t)+G_{\text{norm}}(t)+F_{\text{norm}}(t)}{4}$$
+$$\sqrt[4]{\left( {K_{\text{norm}}(t)*P_{\text{norm}}(t)*G_{\text{norm}}(t)*F_{\text{norm}}(t)} \right)}$$
 
 This, in turn, makes $FSI(t)$ a value within [0,1], where a higher $FSI$ value corresponds to stronger food security conditions, by our composite definition. At the same time, a drop in $FSI$ would signify a deterioration driven by one or more components declining in relevance to their historical range.
 
-While $FSI$ provides an interpretable annual picture, its strong persistence over time reflects the idea that forecasting will be easier in year-to-year change increments rather than absolute levels. Therefore, we tested two prediction formulations: level and change-based. In the level formulation, models predict $FSI(t)$ directly, where $FSI(t)$ denotes the $FSI$ in year t. In the change based formulation, models predict annual change $\Delta FSI(t) = FSI(t) - FSI(t-1)$ and reconstruct levels via $FSI^\prime(t) = FSI(t-1) + \Delta FSI^\prime(t)$. Where this year's predicted $FSI$ equals last year's $FSI$ plus the model's predicted change this year. The $FSI^\prime$ means that value is a predicted $FSI$. Predictors included crop indicators (yield, production, and area harvested for corn, soybeans, and wheat) as well as exogenous variables in a climate and economic context.
+Although $FSI$ is interpretable at annual resolution, its strong persistence over time reflects forecasting year-to-year rather than its absolute levels. Therefore, we derived an indicator for FSI changes to classify improvements (positive) versus deteriorations (negative). 
 
-To capture disruptions and delayed effects, we manually created shock features and lags for all time-varying predictors. Shocks were computed on a year by year basis as changes .(percentage changes for strictly positive variables) We also included 1 to 2 year lags of both raw and shocked level terms. This design allows our model to learn immediate versus delayed associations between production, external conditions, and changes in national food security.
+$$\Delta FSI(t) = FSI(t) - FSI(t-1)\%$$
+
+Once $\Delta FSI(t)$ is negative, indicating a decline in food security, policy intervention may be needed to restore a stable or improving trajectory. 
+
+For prediction, we use crop indicators (yield, production, harvested area for corn, soybeans, and wheat) and exogenous climate/economic variables. To capture disruptions and delayed effects, we engineer (i) yearly shock features (year-over-year changes; percent changes for strictly positive variables) and (ii) 1-2 year lags of both levels and shocks, allowing the model to learn immediate versus lagged associations with $\Delta FSI$.
 
 \subsection{Model Selection}
-To accurately test whether or not all of the predictors could contain a usable signal for food security, we employed multiple supervised machine learning regression models to predict for our $FSI$. The model had a time-respective training and testing data split where 1970 to 2012 data was used for training and 2013 to 2023 data was used for testing. The model was benchmarked against a persistent baseline that forecasts the next year's value.
+To assess whether the predictors contain usable signal for national food security, we evaluated multiple supervised regression models to predict $FSI$ and derive $\Delta FSI$. Models were trained using a time-ordered split (1970-2012) and tested on 2013-2023, and performance was benchmarked against a persistence baseline that forecasts the next year's value.
 
-We compared a small set of regression models to test, each with different strengths. These included a regularized Ridge regression linear model as well as a non linear Random Forest regression ensemble model. The Ridge model provides a transparent benchmark that handles all correlated predictors through regularization; the Random Forest model can help capture non-linear interactions between variables without requiring a separate fixed functional form. To evaluate which model allowed for easier forecasting, our two formulation processes were used, and the best-performing approach was selected based on predictive accuracy and the held-on test period.
+We compared a regularized linear Ridge regression and a non-linear Random Forest ensemble. Ridge provides a transparent benchmark that mitigates multicollinearity via regularization, whereas Random Forest captures non-linearities and interactions without imposing a parametric functional form. Across both level-($FSI$) and change-based ($\Delta FSI$) formulations, we selected the best approach based on predictive accuracy on the held-out test period.
 
 \subsection{Performance Metrics}
-Predictive accuracy on held-out years was measured using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and $R^2$ values, reported in relevance to the persistence baseline. For the second formulation, the change-based formulation, we assessed directional performance additionally by classifying whether $\Delta FSI$ was bigger than 0 and then computing a confusion matrix and balanced accuracy along with it. Receiver Operating Characteristic Area Under the Curve (ROC AUC) and average precision were also calculated using the changed, predicted scores.
+Predictive accuracy of level formulation $FSI$ along time was measured using Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and $R^2$ values, reported in relevance to the persistence baseline. For the change-based formulation, we assessed directional performance additionally by classifying whether $\Delta FSI$ was postive and then computing a confusion matrix and balanced accuracy along with it. Receiver Operating Characteristic Area Under the Curve (ROC AUC) and average precision were also calculated using the changed, predicted indicator.
 
 \section{Results}
 
-Through national staple-crop statistics and exogenous economic indicators, we evaluated the predictive perforation of the proposed Ridge and Random Forest models for estimating food security in the United States. In this section, we see how well our models predict U.S. food security in the held-out period and what signals drive said predictions. 
+Using national staple-crop statistics and exogenous economic indicators, we evaluated Ridge and Random Forest models for predicting U.S. food security. In this section, we evaluate how our models predict U.S. food security in the held-out period and what signals contributing to model estimates. 
 
-According to the results across the tested models, the Random Forest model, trained on $\Delta FSI$, was selected as the primary approach as it provided the most reliable out-of-sample tracking of $FSI$ relative to the alternative models and our persistence baseline. Therefore, we present the results from the Random Forest model first, followed by diagnostics and an auxiliary directional evaluation.
+Across models' performance, the Random Forest model, trained on $\Delta FSI$, was selected as the primary approach as it provided the most reliable out-of-sample tracking of $FSI$ comparing with alternative models and our persistence baseline. We therefore present the Random Forest first, followed by diagnostics and an auxiliary directional evaluation.
 
 \begin{figure*}
     \centering
     \includegraphics[width=1\textwidth]{fig2_timeseries_actual_pred_persist.png}
-    \caption{Observed vs Predicted $\Delta FSI$ Over Time: Random Forest vs Persistence (2013-2023)}
+    \caption{Observed vs Predicted $FSI$ Over Time: Random Forest vs Persistence (2013-2023)}
     \label{fig:2}
 \end{figure*}
 
-Figure \ref{fig:2} shows a comparison between the observed $FSI$ in the 2013 to 2023 test period and the predictions from the Random Forest model trained on annual changes ($\Delta FSI$). In addition, a persistence baseline that simply carries forward the previous $FSI$ ($FSI(t-1)$) is also compared. We set the y-axis to start at 0.60, rather than 0, to focus on the 2013-2023 range and make small but meaningful differences between the observed $FSI$, model predictions, and the persistence baseline easier to see. Overall, the Random Forest model is able to forecast patterns following the same broad trajectory as the observed series, including a mid-decade decline and substantial rise right after 2017. This suggests that the model captures meaningful year by year movements rather than only the trend in the long run. The persistence baseline also helps track the general direction; however, it responds more slowly to turning points because it assumes that there has been no change beyond last year's level. Differences between predicted and observed curves are most visible around the sharper transitions, where the model either slightly over or underestimates the magnitude of change. But, the close alignment across the vast majority of the years shows that crop and “shock and lag” features contain usable signals for national food-security dynamics.
+Figure \ref{fig:2} compares observed $FSI$ values in the 2013-2023 test period with predictions from the Random Forest model. We set the y-axis to start at 0.60, rather than 0, to focus on variation within the test range and to highlight differences among the model. Overall, the Random Forest model is able to track the broad observed trajectory, including a mid-decade decline and the sharp post-2017 increase. This suggests that the model captures year by year changes rather than only the trend in the long run. The most visible errors occur around the sharper transitions, where the model either over- or underestimates the change magnitude. But, the close alignment in most years shows that crop and “shock/lag” features contain usable signals for national food-security dynamics.
 
-Figure \ref{fig:3} plots the same test-year values as Figure \ref{fig:2}, but collapses them into point pairs where each dot is one year with the x-axis being the observed $FSI$ and the y-axis as the predicted $FSI$. Points closer to the line of best fit means better agreement. In our test set, our predictions are aligned with the observations with a correlation value of around 0.82, with 6 out of 11 years falling within 0.05 of the true value and 4 out of 11 within 0.02. Similarly to Figure 1, the largest mismatches occur in the volatile years: 2017 being one as it is underpredicted. 
+% Figure \ref{fig:3} plots the same test-year values as Figure \ref{fig:2}, but collapses them into point pairs where each dot is one year with the x-axis being the observed $FSI$ and the y-axis as the predicted $FSI$. Points closer to the line of best fit means better agreement. In our test set, our predictions are aligned with the observations with a correlation value of around 0.82, with 6 out of 11 years falling within 0.05 of the true value and 4 out of 11 within 0.02. Similarly to Figure 1, the largest mismatches occur in the volatile years: 2017 being one as it is underpredicted. 
 
-Figure \ref{fig:2} is a time-series story which shows whether the model follows a yearly trajectory with turning points compared to a persistence baseline. On the other hand, Figure \ref{fig:3} is a calibration, or fit, check as it ignores ordering in time and visualizes how close predictions in our model are to the correct values overall. 
+% Figure \ref{fig:2} is a time-series story which shows whether the model follows a yearly trajectory with turning points compared to a persistence baseline. On the other hand, Figure \ref{fig:3} is a calibration, or fit, check as it ignores ordering in time and visualizes how close predictions in our model are to the correct values overall. 
 
-\begin{figure*}
-   \centering
-   \includegraphics[width=1\linewidth]{fig3_scatter_pred_vs_actual.png}
-   \caption{Predicted vs Observed $FSI$ in the Test Period (2013-2023)}
-   \label{fig:3}
-\end{figure*}
+% \begin{figure*}
+%    \centering
+%    \includegraphics[width=1\linewidth]{fig3_scatter_pred_vs_actual.png}
+%    \caption{Predicted vs Observed $FSI$ in the Test Period (2013-2023)}
+%    \label{fig:3}
+% \end{figure*}
 
 \begin{figure*}
    \centering
