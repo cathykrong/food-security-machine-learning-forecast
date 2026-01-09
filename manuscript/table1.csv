@@ -1,0 +1,8 @@
+Configuration,Shocks,Lag depth,Lagged shocks,RMSE,MAE,R^2,Balanced accuracy
+Persistence baseline (FSI(t)=FSI(t???1)),---,---,---,0.0669,0.0531,0.6727,---
+Shocks + lag1+lag2 (no lagged shocks),On,2,Off,0.0671,0.0487,0.6702,0.7458
+Shocks + lag1+lag2,On,2,On,0.0674,0.0476,0.6675,0.7458
+Shocks + lag1,On,1,On,0.0682,0.0495,0.6586,0.6713
+No shocks + no lags,Off,0,Off,0.0755,0.0619,0.572,0.5221
+Shocks only,On,0,Off,0.0758,0.0567,0.5678,0.6713
+Lag1 only,Off,1,Off,0.0775,0.068,0.5458,0.5221

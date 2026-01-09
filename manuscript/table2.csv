@@ -1,0 +1,6 @@
+Setup,Model,Balanced accuracy,Sensitivity,Specificity
+ΔFSI: crops+macro+shocks+lags,RandomForest,0.8391,0.8949,0.7831
+ΔFSI: macro+shocks+lags,RandomForest,0.7644,0.7458,0.7831
+ΔFSI: crops+shocks+lags,GradientBoosting,0.7085,0.8949,0.5221
+ΔFSI: crops+shocks+lags,RidgeCV,0.6526,1,0.261
+BASELINE,Persistence (??=0),0.5221,0,1
