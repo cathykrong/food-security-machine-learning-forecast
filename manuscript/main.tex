@@ -170,7 +170,7 @@ Predictive accuracy of level formulation $FSI$ along time was measured using Roo
 
 Using national staple-crop statistics and exogenous economic indicators, we first evaluated three different model configurations, Random Foresting, RidgeCV, and GradientBoosting, to predict $FSI$ with regression. Across all model configurations $FSI$ showed strong yearly posistence, meaning a "no-change" forecast, anchored on the persistence baseline (prior year level), already achieved strong predictive performance.
 
-Our second step in our project was to predict the direction of change for our $\Delta FSI$. We first converted $\Delta FSI$ into a binary direction label ($\Delta FSI > 0$ vs $\Delta FSI \le 0$) to demonstrate cleared seperation in performance with our same model set.
+The second step in this study was to predict the direction of change for $\Delta FSI$. We first converted $\Delta FSI$ into a binary direction label ($\Delta FSI > 0$ vs $\Delta FSI \le 0$) to demonstrate cleared seperation in performance with same model set.
 
 \begin{figure*}
     \centering
@@ -202,7 +202,7 @@ The model picks up much of the year-to-year signal in the predictors, which is r
     \label{fig:3}
 \end{figure*}
 
-Figure~\ref{fig:3} plots the residuals, defined as Actual minus Predicted:
+Figure \ref{fig:3} plots the residuals, defined as Actual minus Predicted:
 $$r(t)=FSI_{\text{actual}}(t)-FSI_{\text{pred}}(t)$$
 so positive values mean the model is underpredicting and negative values mean it is overpredicting. The errors are not spread evenly across the test period. Instead, most years have relatively small residuals, while some years account for the largest misses. Residuals range from about $-0.50$ (early in the test window) to about $+0.66$ (the largest underprediction, near the middle). This swing from overprediction to sustained undershooting suggests the model struggles to adjust when the observed series shifts to a new trajectory. In the later years, residuals are consistently small and positive (roughly $0.10$-$0.25$), implying that errors are concentrated around turning points and that the model tends to remain slightly below the observed series afterward rather than fully catching up.
 
@@ -218,7 +218,7 @@ The importance of features for predicting $FSI$ was evaluated based on the model
     \label{fig:4}
 \end{figure*}
 
-Figure \ref{fig:4} shows the top $15$ feature importances from predicting $\Delta FSI$. Two climate-related predictors, temp_change_c ($\approx 0.245$) and t_norm ($\approx 0.23$), have a high concentration of importance. Together, they account for approximately $0.47$ to $0.48$ of the total model importance, or nearly half of the explained split gain in the forest. The next most significant predictors, MAIZE_lag2 and soybeans_area_harvested_yoy (each $\approx 0.05$), form a second tier at significantly smaller magnitudes. Macro/commodity and crop-shock terms like CRUDE_PETRO_yoy_pct ($\approx 0.03$) and corn_yield_derived_yoy ($\approx 0.02$-$0.025$) are included in a third tier. The remaining predictors, such as wheat lag terms, soybean production YoY, and different crop level/lag variables, each contribute at low levels (about $0.01$-$0.02$), creating a long tail of smaller effects.
+Figure \ref{fig:4} shows the top $15$ feature importances from predicting $\Delta FSI$. Two climate-related feature, t_norm (Normalized Land Temperature Change), has the highest importance($\approx 0.23$). The next most significant predictors, MAIZE_lag2 and soybeans_area_harvested_yoy (each $\approx 0.05$), form a second tier at significantly smaller magnitudes. Macro/commodity and crop-shock terms like CRUDE_PETRO_yoy_pct ($\approx 0.03$) and corn_yield_derived_yoy ($\approx 0.02$-$0.025$) are included in a third tier. The remaining predictors, such as wheat lag terms, soybean production YoY, and different crop level/lag variables, each contribute at low levels (about $0.01$-$0.02$), creating a long tail of smaller effects.
 
 \begin{table*}[h]
     \centering
@@ -229,30 +229,30 @@ Figure \ref{fig:4} shows the top $15$ feature importances from predicting $\Delt
         \begin{tabular}{@{}l c c c c c c c@{}}
             \toprule
             % \rowcolor{gray!20}
-            \textbf{Configuration} & \textbf{Shocks} & \textbf{\shortstack[c]{Lag \\ Depth}} & \textbf{\shortstack[c]{Lagged \\ Shocks}} & \textbf{RMSE} & \textbf{MAE} & $\mathbf{R^2}$ & \textbf{\shortstack[c]{Balanced \\ Accuracy}} \\ 
+            \textbf{Configuration} & \textbf{Shocks} & \textbf{\shortstack[c]{Lag \\ Depth}} & \textbf{\shortstack[c]{Lagged \\ Shocks}} & \textbf{RMSE} & \textbf{MAE} & $\mathbf{R^2}$ \\ 
             \midrule
-            \shortstack[c]{Persistence baseline \\ (FSI(t)=FSI(t-1))} & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & 0.0699 & 0.0554 & 0.6443 & \\
-            \rowcmidrule{8}
-            \shortstack[c]{Shocks + lag1+lag2 \\ (no lagged shocks)} & On & 2 & Off & 0.0701 & 0.0509 & 0.6419 & 0.7143 \\
-            \rowcmidrule{8}
-            Shocks + lag1+lag2 & On & 2 & On & 0.0704 & 0.0497 & 0.6393 & 0.7143 \\
-            \rowcmidrule{8}
-            Shocks + lag1 & On & 1 & On & 0.0712 & 0.0517 & 0.6308 & 0.6429 \\
-            \rowcmidrule{8}
-            No shocks + no lags & Off & 0 & Off & 0.0788 & 0.0646 & 0.5478 & 0.5 \\
-            \rowcmidrule{8}
-            Shocks only & On & 0 & Off & 0.0791 & 0.0592 & 0.5438 & 0.6429 \\
-            \rowcmidrule{8}
-            Lag1 only & Off & 1 & Off & 0.0809 & 0.071 & 0.5227 & 0.5 \\
+            \shortstack[c]{Persistence baseline \\ (FSI(t)=FSI(t-1))} & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & \multicolumn{1}{c}{---} & 0.0669 & 0.0531 & 0.6727 \\
+            \rowcmidrule{7}
+            \shortstack[c]{Shocks + lag1+lag2 \\ (no lagged shocks)} & On & 2 & Off & 0.0671 & 0.0487 & 0.6702 \\
+            \rowcmidrule{7}
+            Shocks + lag1+lag2 & On & 2 & On & 0.0674 & 0.0476 & 0.6675 \\
+            \rowcmidrule{7}
+            Shocks + lag1 & On & 1 & On & 0.0682 & 0.0495 & 0.6586 \\
+            \rowcmidrule{7}
+            No shocks + no lags & Off & 0 & Off & 0.0755 & 0.0619 & 0.572 \\
+            \rowcmidrule{7}
+            Shocks only & On & 0 & Off & 0.0758 & 0.0567 & 0.5678 \\
+            \rowcmidrule{7}
+            Lag1 only & Off & 1 & Off & 0.0775 & 0.068 & 0.5458 \\
             \bottomrule
         \end{tabular}% <--- End the tabular environment
         % \rowcolors{1}{}{}
     }% <--- End the resizebox command
 \end{table*}
 
-Table \ref{tab:model_results} shows how sensitive the Random Forest $\Delta FSI$ model is to the way we encoded short-run disruptions and delayed effects in our predictors. We varied two feature types: our shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps isolate whether the model benefits more from immediate year by year changes, historical memory, or both.
+Table \ref{tab:model_results} shows how sensitive the Random Forest $\Delta FSI$ model is regarding short-run disruptions and delayed effects in our forecasting. We varied two feature types: shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps isolate whether the model benefits more from changes in immediate year, historical memory, or both.
 
-The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MAE $=0.0531$, $R^2=0.6727$), highlighting substantial year-to-year stability in the index. Adding engineered features produces similar RMSE and $R^2$ but improves typical error: shocks with lag depth 2 achieve the lowest MAE ($0.0476$--$0.0487$) with RMSE remaining near $0.0671$--$0.0674$ and $R^2$ near $0.667$--$0.670$, while the lag1-only variant is slightly weaker (RMSE $=0.0682$, MAE $=0.0495$, $R^2=0.6586$). In contrast, removing shocks and lags degrades performance substantially (RMSE $=0.0755$--$0.0775$, MAE $=0.0567$--$0.0680$, $R^2=0.5458$--$0.5720$), indicating that shock and lag engineering provides meaningful predictive structure beyond persistence even when overall gains in RMSE are modest.
+The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MAE $=0.0531$, $R^2=0.6727$), highlighting substantial year-to-year stability in the index. Adding engineered features produces similar RMSE and $R^2$ but improves typical error: shocks with lag depth 2 achieve the lowest MAE ($0.0476$-$0.0487$) with RMSE remaining near $0.0671$-$0.0674$ and $R^2$ near $0.667$-$0.670$, while the lag1-only variant is slightly weaker (RMSE $=0.0682$, MAE $=0.0495$, $R^2=0.6586$). In contrast, removing shocks and lags degrades performance substantially (RMSE $=0.0755$-$0.0775$, MAE $=0.0567$-$0.0680$, $R^2=0.5458$-$0.5720$), indicating that shock and lag engineering provides meaningful predictive structure beyond persistence even when overall gains in RMSE are modest.
 
 
 \begin{figure*}
@@ -260,23 +260,23 @@ The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MA
     % \centering
     \begin{subfigure}[b]{0.5\textwidth}
     \centering
-    \includegraphics[width=1\textwidth]{fig6_roc_bootstrap10.png}
-  \caption[] %
-      {{\small ROC curve}}    
+    \includegraphics[width=1\textwidth]{fig1_confusion_matrix.png}
+   \caption[] %justification=centering
+      {{\small Confusion Matrix}}
     \label{fig:5a}
     \end{subfigure}
     \begin{subfigure}[b]{0.5\textwidth}
     \centering
-    \includegraphics[width=1\textwidth]{fig1_confusion_matrix.png}
-   \caption[] %justification=centering
-      {{\small Confusion Matrix}}
+    \includegraphics[width=1\textwidth]{fig6_roc_bootstrap10.png}
+  \caption[] %
+      {{\small ROC curve}}    
     \label{fig:5b}
     \end{subfigure}
     \caption{ROC Curve and Confusion Matrix for Predicting $\Delta FSI$ > 0}
     \label{fig:5}
 \end{figure*}
 
-Figure \ref{fig:5} is an evaluation on whether the model is able to predict the direction of food security change on an annual scale by framing the outcome as a binary label. Our definitions included: Positive $\Delta FSI > 0$ and Negative $\Delta FSI \le 0$ . This figure includes two visualizations. The ROC curve (\ref{fig:5a}) shows a moderate level of discriminative ability, with an AUC of 0.71. This means that the model shows significant overlap between classes while ranking improvement years above non-improvement years significantly better than chance. Our second visualization (\ref{fig:5b}) is the confusion matrix which is shown as percentages with the predicted classes (normalized by column), so each column is a reflection of how accurate the model's predicated label is. When the model predicts Positive, 87.4\% of those predictions correspond to true improvement years (true positives), while 12.6\% correspond to false alarms (false positives). In contrast, when the model predicts Negative, 76.6\% of those predictions are correct non-improvement years (true negatives), but 23.4\% are missed improvement years (false negatives).
+Figure \ref{fig:5} is an evaluation on whether the model is able to predict the direction of food security change on an annual scale by framing the outcome as a binary label. Our definitions included: Positive $\Delta FSI > 0$ and Negative $\Delta FSI \le 0$ . This figure includes two diagrams. Figure (\ref{fig:5a}) is the confusion matrix which is shown as percentages with the predicted classes (normalized by column), so each column is a reflection of how accurate the model's predicated label is. When the model predicts Positive, 87.4\% of those predictions correspond to true improvement years (true positives), while 12.6\% correspond to false alarms (false positives). In contrast, when the model predicts Negative, 76.6\% of those predictions are correct non-improvement years (true negatives), but 23.4\% are missed improvement years (false negatives). The ROC curve (\ref{fig:5b}) shows a moderate level of discriminative ability, with an AUC of 0.71. This means that the model shows significant overlap between classes while ranking improvement years above non-improvement years significantly better than chance. 
 
 \begin{table*}[h]
     \centering
@@ -289,13 +289,13 @@ Figure \ref{fig:5} is an evaluation on whether the model is able to predict the 
 \toprule
 \textbf{Setup} & \textbf{Model} & \textbf{\shortstack[c]{Balanced \\ Accuracy}} & \textbf{Sensitivity} & \textbf{Specificity} \\
 \midrule
-\(\Delta\)FSI: crops+macro+shocks+lags & RandomForest     & 0.8036 & 0.8571 & 0.75 \\
+\(\Delta\)FSI: crops+macro+shocks+lags & RandomForest     & 0.8391 & 0.8949 & 0.7831 \\
+           \rowcmidrule{5}
+\(\Delta\)FSI: macro+shocks+lags       & RandomForest     & 0.7644 & 0.7458 & 0.7831 \\
             \rowcmidrule{5}
-\(\Delta\)FSI: macro+shocks+lags       & RandomForest     & 0.7321 & 0.7143 & 0.75 \\
+\(\Delta\)FSI: crops+shocks+lags       & GradientBoosting & 0.7085 & 0.8949 & 0.5221 \\
             \rowcmidrule{5}
-\(\Delta\)FSI: crops+shocks+lags       & GradientBoosting & 0.6786 & 0.8571 & 0.50 \\
-            \rowcmidrule{5}
-\(\Delta\)FSI: crops+shocks+lags       & RidgeCV          & 0.625  & 1      & 0.25 \\
+\(\Delta\)FSI: crops+shocks+lags       & RidgeCV          & 0.6526  & 1      & 0.261 \\
             \rowcmidrule{5}
 Baseline                               & Persistence (\(\Delta=0\)) & 0.5    & 0      & 1    \\
 \bottomrule
@@ -304,16 +304,16 @@ Baseline                               & Persistence (\(\Delta=0\)) & 0.5    & 0
     }% <--- End the resizebox command
 \end{table*}
 
-Table \ref{tab:2} is a comparison of directional performance across a full set of models by evaluating whether each approach correctly predicts the sign of annual food security change, where Positive is $\Delta FSI$ > 0 and Negative is <= 0. While the earlier results focus exclusively on the Random Forest $\Delta FSI$ model for detailed diagnostics, Table 2 is a showcase of the other models we tried to test with by contextualizing how alternative methods and feature sets perform on the same 2013 to 2023 test window. 
+Table \ref{tab:2} is a comparison of directional performance across a full set of models by evaluating whether each approach correctly predicts the sign of annual food security change. While the earlier results focus exclusively on the Random Forest $\Delta FSI$ model for detailed diagnostics, Table \ref{tab:2} is a showcase of the other models we tried perform on the same 2013 to 2023 test window. 
 
-The best-performing model is the Random Forest using the full feature set (crops+macro+shocks+lags), achieving balanced accuracy $=0.8391$ with high sensitivity ($0.8949$) and strong specificity ($0.7831$), indicating reliable identification of both improvement and non-improvement years. Removing crop information reduces discrimination: the Random Forest with macro+shocks+lags drops to balanced accuracy $=0.7644$ (sensitivity $=0.7458$, specificity $=0.7831$), suggesting that crop indicators provide additional signal beyond macro-climate shocks alone. Gradient Boosting exhibits an imbalanced error profile (balanced accuracy $=0.7085$) with high sensitivity ($0.8949$) but lower specificity ($0.5221$), while RidgeCV further amplifies this trade-off by predicting positives aggressively (sensitivity $=1.0000$) at the cost of very low specificity ($0.2610$) and lower balanced accuracy ($0.6526$). The persistence baseline performs near chance (balanced accuracy $=0.5221$), underscoring that directional improvements are not explained by persistence alone and are captured most effectively by the full-feature Random Forest.
+The best-performing model is the Random Forest using the full feature set (crops+macro+shocks+lags), achieving balanced accuracy $=0.8391$ with high sensitivity ($0.8949$) and strong specificity ($0.7831$), indicating reliable identification of both improvement and non-improvement years. Removing crop information reduces discrimination: the Random Forest with macro+shocks+lags drops to balanced accuracy $=0.7644$ (sensitivity $=0.7458$, specificity $=0.7831$), suggesting that crop indicators provide additional signal beyond macro-climate shocks alone. Gradient Boosting exhibits an imbalanced error profile (balanced accuracy $=0.7085$) with high sensitivity ($0.8949$) but lower specificity ($0.5221$), while RidgeCV further amplifies this trade-off by predicting positives aggressively (sensitivity $=1.0000$) at the cost of very low specificity ($0.2610$) and lower balanced accuracy ($0.6526$). These results show that directional improvements are captured most effectively by the full-feature Random Forest.
 
 \section{Discussion}
-Overall, our results show that national crop yield, production, and harvest-area statistics can help track U.S.\ food security dynamics over time. The Random Forest $\Delta FSI$ framework provided the most reliable performance among the tested approaches, demonstrating that supervised models can learn relationships between staple-crop indicators and a composite food security index using annual U.S.-only data (1970--2023), particularly when the target is modeled as year-to-year change ($\Delta FSI$) rather than absolute levels. In the 2013--2023 holdout period, the reconstructed predictions generally followed the observed trajectory and performed competitively against a strong persistence benchmark, supporting the notion that national crop conditions correspond to broader food-system outcomes and can contribute to monitoring and forecasting.
+Overall, our results show that national crop yield, production, and harvest-area statistics can help track US food security dynamics over time. The Random Forest $\Delta FSI$ framework provided the most reliable performance among the tested approaches, demonstrating that supervised models can learn relationships between crop indicators and a composite food security index using annual U.S.-only data (1970-2023), particularly when the target is modeled as year-to-year change ($\Delta FSI$) rather than absolute levels. In the 2013-2023 period, the reconstructed predictions generally followed the observed trajectory and performed competitively against the persistence benchmark, supporting that national crop conditions correspond to broader system outcomes and can contribute to monitoring and forecasting.
 
-A key takeaway is that shock and lag feature engineering mattered nearly as much as model choice. The shock--lag sensitivity results show that removing both YoY shock terms and lag structure worsened performance, whereas including both consistently improved results. This is plausible in food systems where production outcomes, input costs, and price conditions influence availability and stability with delays rather than instantaneously. Consistent with this mechanism, lagged crop quantities (e.g., $t\!-\!1$, $t\!-\!2$) and year-over-year shock terms (YoY \%) appear among the strongest predictors in Figure~4, suggesting that the model benefits from both the ``memory'' of prior conditions and the detection of sudden disruptions.
+A key takeaway is that shock and lag feature engineering impacts as much as model choice. The shock-lag sensitivity results show that removing both YoY shock terms and lag structure worsened performance, whereas including both consistently improved results. This is possible in food systems where production outcomes, costs, and price conditions influence availability and stability with delays rather than instantaneously. Consistent with this mechanism, lagged crop quantities (e.g., $t\!-\!1$, $t\!-\!2$) and YoY shock terms (\%) appear among the strongest predictors in Figure \ref{fig:4}, suggesting that the model benefits from both the 'memory' of prior conditions and the detection of sudden disruptions.
 
-At the same time, our results clarify what production-centered prediction can and cannot do. The residual analysis shows that the largest errors occur around sharper transitions, indicating that turning points are harder to reconstruct from crop and engineered macro-climate features. Directional evaluation of up/down changes in $\Delta FSI$ shows moderate discrimination (AUC $\approx 0.71$), which is consistent with food security not being determined by production alone; affordability, distribution, macroeconomic shocks, and policy/trade dynamics can shift outcomes even when harvest data are strong. As a result, production and commodity indicators are most useful for identifying medium-term trends and gradual movement, and less trustworthy when access or policy forces dominate the signal.
+Meanwhile, our results clarify what production-centered prediction can and cannot do. The residual analysis shows that the largest errors occur around sharper transitions, indicating that turning points are harder to reconstruct from crop and engineered macro-climate features. Directional evaluation of up/down changes in $\Delta FSI$ shows moderate discrimination (AUC $\approx 0.71$), which is consistent with food security not being determined by production alone; affordability, distribution, macroeconomic shocks, and policy/trade dynamics can shift outcomes even when harvest data are strong. As a result, production and commodity indicators are most useful for identifying medium-term trends and gradual movement, and less trustworthy when access or policy forces dominate the signal.
 
 Several factors also limit directional performance. First, the test window spans only 11 years, so a few borderline years can noticeably shift the ROC curve. Second, the positive/negative boundary is susceptible to small noise in either the predictors or the constructed $FSI$, because many national year-to-year changes are small and near $\Delta FSI=0$. Third, even when agricultural production contains signal, the sign of year-to-year change depends on drivers only partially represented in our features (e.g., policy shifts, trade dynamics, household prices, and access constraints). For these reasons, the ROC/AUC results should be interpreted as a supporting diagnostic indicating some ability to detect improvement years rather than a definitive early-warning classifier.
 
