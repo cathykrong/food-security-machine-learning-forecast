@@ -43,46 +43,22 @@
 %% Count of words
 %%Submit this tex to https://app.uio.no/ifi/texcount/online.php for TeXCount online interface
 
-%% alternate ways
-% \immediate\write18{texcount -nc -inc -sum -nosub -q \jobname.tex> wordcount.txt}
-% \newcommand{\wordcount}{\verbatiminput{wordcount.tex}}
-
-% \newcommand{\CorrAuthor}{%
-%   \large \textit{Corresponding author(s):}\\
-% \\
-%   \normalsize Cathy Rong   (\href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com})\\
-% %   Safiya Taher (\href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com})\\
-% }
 \newcommand{\WordCountfootnote}{
 \begingroup
 \renewcommand\thefootnote{}
-\footnote{\textit{Word Count (excluding figures, tables, references, and title page):} 2932}
+\footnote{\textit{Word Count (excluding figures, tables, references, and title page):} 2922}
 \addtocounter{footnote}{-1}
 \endgroup
 }
-% \verbatiminput{wordcount.txt}}  %  (excluding figures, tables, references, and title page)
 
 \begin{document}
 
-% \begin{titlepage}
-%   \renewcommand\thanks[1]{}
-%   \maketitle
-%   \vspace{3em}
-%   \noindent\CorrAuthor
-%   \vspace{5em}
-%   \large \WordCount
-%   \thispagestyle{empty}
-% \end{titlepage}
-
 \maketitle
 
-
-
-%\begin{multicols}{1}
 \begin{abstract}
 Food insecurity persists even in high-output agricultural systems, underscoring the need for timely national indicators. This study tests whether U.S. agricultural production signals can predict changes in a composite Food Security Index ($FSI$) using annual data (1970-2023) integrating USDA NASS QuickStats measures for three major staple crops: corn, soybeans, and wheat (yield, production, and area harvested) as well as engineering shock and lag features.
 
-The prediction target expresses changes in a $FSI$ scaled from $[0,1]$ (higher = more food secure) constructed from four national indicators, including FAOSTAT supply/production measures and macro-climate variables: Food production index, Dietary energy supply, GDP per capita, and Temperature change on land. We first used regression models (Random Forest, RidgeCV, and Gradient Boosting) trained on 1970-2012 and tested on 2013-2023 data to predict annual changes in food security, $( \Delta FSI(t) )$, evaluating accuracy with RMSE/MAE/ $R^2$ against a persistence baseline $FSI(t-1)$, and then converted $(\Delta FSI)$ into a binary direction label (positive $(>0)$, negative $(\le 0)$) to assess how well the same models predict year-to-year improvement vs decline using balanced accuracy.
+The prediction target expresses changes in a $FSI$ scaled from $[0,1]$ (higher = more food secure) constructed from four national indicators, including FAOSTAT supply/production measures and macro-climate variables: Food production index, Dietary energy supply, GDP per capita, and Temperature change on land. We first used regression models (Random Forest, RidgeCV, and Gradient Boosting) trained on 1970-2012 and tested on 2013-2023 data to predict annual changes in food security, $(\Delta FSI(t))$, evaluating accuracy with RMSE/MAE/ $R^2$ against a persistence baseline $FSI(t-1)$, and then converted $(\Delta FSI)$ into a binary direction label (positive $(>0)$, negative $(\le 0)$) to assess how well the same models predict year-to-year improvement vs decline using balanced accuracy.
 
 Overall, results showed that the national crop statistics contain measurable predictive indicators for annual food security dynamics and motive extensions.
 
@@ -150,9 +126,7 @@ $$\sqrt[4]{\left( {K_{\text{norm}}(t)*P_{\text{norm}}(t)*G_{\text{norm}}(t)*F_{\
 This, in turn, makes $FSI(t)$ a value within [0,1], where a higher value corresponds to stronger food security conditions. Simultaneously, a drop in $FSI$ would signify deterioration, driven by one or more components declining in relevance to their historical range.
 
 Although $FSI$ is interpretable at annual resolution, its strong persistence over time reflects annual forecasting rather than absolute levels. Therefore, we derived an indicator for FSI changes to classify improvements (positive) versus deteriorations (negative). This is what was used for our predictions.
-
-$$\Delta FSI(t) = FSI(t) - FSI(t-1)\%$$
-
+$$\Delta FSI(t) = FSI(t) - FSI(t-1)$$
 Once $\Delta FSI(t)$ is negative, indicating a deterioration, policy intervention may be needed. 
 
 For prediction, we use crop indicators (yield, production, harvested area for corn, soybeans, and wheat) and exogenous macro variables. To capture disruptions and delayed effects, we engineered (i) yearly shock features (year-over-year changes; percent changes for strictly positive variables) and (ii) 1-2 year lags of both levels and shocks, allowing the model to distinguish immediate versus lagged associations with $\Delta FSI$.
@@ -165,16 +139,16 @@ Our solution has two steps. Our first step compares our models using a change-ba
 
 \section{Results}
 
-Across all model configurations $\Delta FSI$ showed strong yearly persistence, meaning a "no-change" forecast. Figures 2, 3, 4, and Table 1 represent our first step. Figures 5a, 5b, and Table 2 showcase our second step. We translated our predicted $\Delta FSI$ back into levels by reconstructing “predicted” food security as: $FSI_{\text{pred}}(t) = FST(t-1) + \Delta FSI_{\text{pred}}(t)$ for Figures 2 and 3. This allows for better visualization.
-
-The best performing model was Random Foresting, so the majority of our figures present those results, except for model comparison in Table 2.
-
 \begin{figure*}
     \centering
     \includegraphics[width=1\textwidth]{fig2_timeseries_actual_pred_persist.png}
     \caption{Observed vs Predicted $FSI$ Over Time: Random Forest vs Persistence (2013-2023)}
     \label{fig:2}
 \end{figure*}
+
+Across all model configurations $\Delta FSI$ showed strong yearly persistence, meaning a "no-change" forecast. Figures 2, 3, 4, and Table 1 represent our first step. Figures 5a, 5b, and Table 2 showcase our second step. We translated our predicted $\Delta FSI$ back into levels by reconstructing “predicted” food security as: $FSI_{\text{pred}}(t) = FST(t-1) + \Delta FSI_{\text{pred}}(t)$ for Figures 2 and 3. This allows for better visualization.
+
+The best performing model was Random Foresting, so the majority of our figures present those results, except for model comparison in Table 2.
 
 Figure \ref{fig:2} shows that the model accurately follows annual signals in the predictors, which is reflected in how closely the reconstructed series follows the observed index. Biggest deviations occur around rapid transition periods (2014-2017) when the observed index shifts more abruptly than its usual pattern. In those years, predictions overlooked the size of the change. After said transition, the model stays below the observed series for several years, indicating a tendency to understate food security during extended recovery or stabilization. Overall, Figure \ref{fig:2} suggests that production-based predictors do carry meaningful temporal information, but performance may be limited by sharp transitions.
 
@@ -191,6 +165,8 @@ Positive values mean the model is underpredicting and negative values indicate o
 
 Feature importance for predicting $\Delta FSI$ was evaluated based on Random Foresting model coefficients. Features with larger absolute coefficient values were deemed more significant, a stronger influence on the target outcome. 
 
+Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_norm ($\approx 0.23$) is the highest predictor, meaning most important. The next most significant predictors, MAIZE_lag2, a commodity price lag signal, and soybeans_area_harvested_yoy, a shocked crop predictor, (each $\approx 0.05$), form a second tier at significantly smaller magnitudes. Macro/commodity and crop-shock terms like CRUDE_PETRO_yoy_pct ($\approx 0.03$) and corn_yield_derived_yoy ($\approx 0.02$-$0.025$) are included in a third tier. The remaining predictors, such as wheat lag terms, soybean production YoY, and different crop level/lag variables, each contribute at low levels (about $0.01$-$0.02$), creating a long tail of quaternary effects.
+
 \begin{figure*}
     \centering
     \includegraphics[width=1\linewidth]{fig7_feature_importance_top15.png}
@@ -198,13 +174,11 @@ Feature importance for predicting $\Delta FSI$ was evaluated based on Random For
     \label{fig:4}
 \end{figure*}
 
-Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_norm ($\approx 0.23$) is the highest predictor, meaning most important. The next most significant predictors, MAIZE_lag2, a commodity price lag signal, and soybeans_area_harvested_yoy, a shocked crop predictor, (each $\approx 0.05$), form a second tier at significantly smaller magnitudes. Macro/commodity and crop-shock terms like CRUDE_PETRO_yoy_pct ($\approx 0.03$) and corn_yield_derived_yoy ($\approx 0.02$-$0.025$) are included in a third tier. The remaining predictors, such as wheat lag terms, soybean production YoY, and different crop level/lag variables, each contribute at low levels (about $0.01$-$0.02$), creating a long tail of quaternary effects.
-
 \begin{table*}[h]
     \centering
     \caption{Shock-Lag Sensitivity Analysis for the Random Forest $\Delta FSI$ Model (Test: 2013-2023)}
     \label{tab:model_results}
-    \resizebox{\textwidth}{!}{% <--- Start the resizebox command
+    \resizebox{\textwidth}{!}{% <-- Start the resizebox command
     % \rowcolors{2}{gray!10}{white}
         \begin{tabular}{@{}l c c c c c c c@{}}
             \toprule
@@ -232,7 +206,7 @@ Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_n
 
 Table \ref{tab:model_results} shows how sensitive the Random Forest $\Delta FSI$ model is to our engineered short-run disruptions and delayed effects. We varied two feature types: our shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps determine if the model benefits more from immediate yearly changes, historical memory, or both.
 
-The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MAE $=0.0531$, $R^2=0.6727$), highlighting annual stability in the index. Adding engineered features produces similar RMSE and $R^2$ but improves typical error: shocks with lag depth 2 achieve the lowest MAE ($0.0476$--$0.0487$) with RMSE remaining near $0.0671$--$0.0674$ and $R^2$ near $0.667$--$0.670$, while the lag1-only variant is slightly weaker (RMSE $=0.0682$, MAE $=0.0495$, $R^2=0.6586$). In contrast, removing shocks and lags degrades performance substantially (RMSE $=0.0755$--$0.0775$, MAE $=0.0567$--$0.0680$, $R^2=0.5458$--$0.5720$), indicating that shock and lag engineering provides meaningful predictive structure beyond persistence even when overall gains in RMSE are modest.
+The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MAE $=0.0531$, $R^2=0.6727$), highlighting annual stability in the index. Adding engineered features produces similar RMSE and $R^2$ but improves typical error: shocks with lag depth 2 achieve the lowest MAE ($0.0476$-$0.0487$) with RMSE remaining near $0.0671$-$0.0674$ and $R^2$ near $0.667$-$0.670$, while the lag1-only variant is slightly weaker (RMSE $=0.0682$, MAE $=0.0495$, $R^2=0.6586$). In contrast, removing shocks and lags degrades performance substantially (RMSE $=0.0755$-$0.0775$, MAE $=0.0567$-$0.0680$, $R^2=0.5458$-$0.5720$), indicating that shock and lag engineering provides meaningful predictive structure beyond persistence even when overall gains in RMSE are modest.
 
 
 \begin{figure*}
@@ -264,7 +238,7 @@ Figure \ref{fig:5} evaluates the model’s ability to predict directional food s
     \caption{Directional Model Comparison for $\Delta FSI$: \\
     Balanced Accuracy, Sensitivity, and Specificity (Test: 2013-2023)}
     \label{tab:2}
-    \resizebox{\textwidth}{!}{% <--- Start the resizebox command
+    \resizebox{\textwidth}{!}{% <-- Start the resizebox command
     % \rowcolors{2}{gray!10}{white}
 \begin{tabular}{@{} llccc @{}}
 \toprule
@@ -282,7 +256,7 @@ Baseline                               & Persistence (\(\Delta=0\)) & 0.5    & 0
 \bottomrule
 \end{tabular}
         % \rowcolors{1}{}{}
-    }% <--- End the resizebox command
+    }% <-- End the resizebox command
 \end{table*}
 
 Table \ref{tab:2} is a comparison of directional performance across all models by evaluating whether each approach correctly predicts the sign of annual food security change. While the earlier results focus exclusively on the Random Forest $\Delta FSI$ model for detailed diagnostics, Table 2 showcases the other models we tried by contextualizing how alternative methods and feature sets perform on the same 2013 to 2023 test window. 
@@ -307,56 +281,13 @@ Otherwise, our findings are directly relevant to policy. First, they support usi
 In conclusion, crop indicators alone cannot fully explain food security, but they are sufficiently informative to support national tracking and monitoring, especially when modeled with shocks and lags. The clearest path to more policy-relevant forecasting is expanding predictors toward access, trade, and policy drivers, and treating YoY changes as more predictable when models can learn from both short-run disruptions and delayed effects.
 
 \section{Conclusion}
-Even in a high-producing agricultural system, such as the United States, national food security can also shift, making timely monitoring and early warnings essential. In conclusion, crop indicators by themselves cannot fully explain food security, but they are sufficiently informative to support tracking and monitoring at the national level, particularly when modelled with shocks and lags. The most compelling evidence from this work is that expanding the predictor set toward access, trade, and policy drivers is the most promising route to policy-relevant forecasting, and that year to year changes in food security are more predictable when models can learn from both short-run disruptions and delayed effects. Future work should expand our predictor set to include more variables such as access, trade, and policy drivers and move toward uncertainty-aware forecasts. Doing so allows  more effective allocation of resources and earlier responses to food-security risks. 
+Even in a high-producing agricultural system, such as US, national food security can also change rapidly, making timely monitoring and early warnings essential. In conclusion, crop indicators by themselves cannot fully explain food security, but they are sufficiently informative to support tracking and monitoring at the national level, particularly when modelled with shocks and lags. The key finding from this work is that machine learning model is a promising approach to policy-relevant forecasting, and that year to year changes in food security are more predictable when models can learn from both short-run disruptions and delayed effects. Future work should expand our predictor set to include more variables such as access, trade, and policy drivers and move toward uncertainty-aware forecasts. Doing so allows more effective allocation of resources and earlier responses to food-security risks. 
 
 \nocite{*}
 
 \section*{Acknowledgements}
 The team would like to thank the support from Dr. Jianshan Chen in University of Alberta. 
-% We would also like to thank STEM Fellowship for providing us the opportunity to participate in the HSBDC. 
-
 
 \bibliography{bibliography}
-
-% \section{Appendix A}
-
-% \setcounter{table}{0}
-% \renewcommand{\thetable}{A\arabic{table}}
-
-% \subsection{Supplementary Table \ref{table:A1}: All Features and Ranks}
-% %\end{multicols}
-% %\begin{multicols}{1}
-
-% %\newpage
-% %\clearpage
-% \onecolumn
-% \begin{center}
-% %\begin{multicols}{1}
-% %\begin{tabular}{|c |c |c|} 
-% %\begin{longtable}{| c{.10\textwidth} | c{.20\textwidth}| c{.20\textwidth} |} 
-% \begin{longtable}{|p{.10\textwidth} |p{.36\textwidth} |p{.54\textwidth} |} 
-% %\begin{supertabular}{|c |c |c|}
-%  \hline
-%  Rank & Features & Description\\ [0.5ex] 
-%  \hline\hline
-% 1 & STATEFIP_11 & District of Columbia\\
-% \hline
-% 2 & STATEFIP_51 & Virginia\\
-% \hline
-% \caption{Feature Detail List}
-%  \label{table:A1}
-% \end{longtable}
-% %\end{supertabular}
-% %\end{table} 
-% %\end{multicols}
-% %\end{multicols}
-% \end{center}
-
-% %TC:ignore  
-
-% \subsubsection*{Counts of words} 
-% \wordcount
-
-% %TC:endignore 
 
 \end{document}
