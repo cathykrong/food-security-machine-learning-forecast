@@ -26,7 +26,7 @@ from sklearn.metrics import (
 # ============================================================
 # USER SETTINGS (edit these)
 # ============================================================
-DATA_PATH = Path(r"E:\1Cathy\hsbdc\AI2026\data3\us_model_table__MEDIAN_IMPUTED.csv")
+DATA_PATH = Path(r"E:\1Cathy\hsbdc\AI2026\data\data3\us_model_table__MEDIAN_IMPUTED.csv")
 YEAR_COL = "year"
 TARGET_COL = "FSI_geomean"
 
@@ -250,8 +250,19 @@ def plot_fig4_residuals(out_df: pd.DataFrame, out_path: Path):
 
 
 
-def plot_fig5_feature_importance(feature_names: list[str], importances: np.ndarray, out_path: Path, topk: int = 15):
-    s = pd.Series(importances, index=feature_names).sort_values(ascending=False).head(topk)[::-1]
+def plot_fig5_feature_importance(
+    feature_names: list[str],
+    importances: np.ndarray,
+    out_path: Path,
+    topk: int = 15,
+):
+    # Build series + drop temp_change_c if present
+    s_all = pd.Series(importances, index=feature_names).sort_values(ascending=False)
+    s_all = s_all.drop(labels=["temp_change_c"], errors="ignore")
+
+    # Select top-k after dropping, then reverse for horizontal bar order
+    s = s_all.head(topk)[::-1]
+
     fig = plt.figure(figsize=(8, 5), dpi=200)
     ax = plt.gca()
     ax.barh(s.index, s.values)
@@ -261,6 +272,7 @@ def plot_fig5_feature_importance(feature_names: list[str], importances: np.ndarr
     plt.tight_layout()
     plt.savefig(out_path, bbox_inches="tight")
     plt.show()
+
 
 
 def plot_roc_and_confmat(y_true_bin: np.ndarray, score: np.ndarray, y_pred_bin: np.ndarray, out_roc: Path, out_cm: Path):
