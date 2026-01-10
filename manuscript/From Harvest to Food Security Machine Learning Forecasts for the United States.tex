@@ -6,9 +6,7 @@
 \usepackage[utf8x]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{caption,subcaption,graphicx,underscore,booktabs,titling}
-% \usepackage[table]{xcolor}
-%\usepackage{multicol,longtable}
-%\usepackage{supertabular,moreverb}
+
 \newcommand{\rowcmidrule}[1]{\cmidrule(lr){1-#1}}
 
 %% Sets page size and margins
@@ -31,7 +29,6 @@
 \usepackage{authblk}
 \author[1, 2]{Cathy Rong\thanks{Corresponding author: \href{mailto:cathyrong11@gmail.com}{cathyrong11@gmail.com}}}
 \author[1]{Safiya Taher}
-% \author[1]{Safiya Taher \thanks{Corresponding author: \href{mailto:cathyrong12@gmail.com}{cathyrong12@gmail.com}}}
 \author[1]{Sabrina Qian}
 \author[1]{Renisa Ghosh}
 \author[1]{Arthur Jiang}
@@ -39,9 +36,6 @@
 \affil[2]{United World Colleges Red Cross Nordic, Flekke, Vestland, Norway}
 \date{January 9, 2026}
 \setlength {\marginparwidth }{2cm}
-
-%% Count of words
-%%Submit this tex to https://app.uio.no/ifi/texcount/online.php for TeXCount online interface
 
 \newcommand{\WordCountfootnote}{
 \begingroup
@@ -82,7 +76,7 @@ We then forecasted $\Delta FSI$ using crop data from United States Department of
 
 \begin{figure*}
     \centering
-    \includegraphics[width=1\linewidth]{fig1.png}
+    \includegraphics[width=1\linewidth]{fig1_flow_chart.png}
     \caption{Study Flow Chart}
     \label{fig:1}
 \end{figure*}
@@ -146,20 +140,20 @@ Our solution has two steps. Our first step compares our models using a change-ba
     \label{fig:2}
 \end{figure*}
 
-Across all model configurations $\Delta FSI$ showed strong yearly persistence, meaning a "no-change" forecast. Figures 2, 3, 4, and Table 1 represent our first step. Figures 5a, 5b, and Table 2 showcase our second step. We translated our predicted $\Delta FSI$ back into levels by reconstructing “predicted” food security as: $FSI_{\text{pred}}(t) = FST(t-1) + \Delta FSI_{\text{pred}}(t)$ for Figures 2 and 3. This allows for better visualization.
+Across all model configurations $\Delta FSI$ showed strong yearly persistence, meaning a "no-change" forecast. Figures \ref{fig:2}, \ref{fig:3}, \ref{fig:4}, and Table \ref{tab:1} represent our first step. Figures \ref{fig:5}, and Table \ref{tab:2} showcase our second step. We translated our predicted $\Delta FSI$ back into levels by reconstructing “predicted” food security as: $FSI_{\text{pred}}(t) = FST(t-1) + \Delta FSI_{\text{pred}}(t)$ for Figures \ref{fig:2} and \ref{fig:3}. This allows for better visualization.
 
-The best performing model was Random Foresting, so the majority of our figures present those results, except for model comparison in Table 2.
+The best performing model was Random Foresting, so the majority of our figures present those results, except for model comparison in Table \ref{tab:2}.
 
 Figure \ref{fig:2} shows that the model accurately follows annual signals in the predictors, which is reflected in how closely the reconstructed series follows the observed index. Biggest deviations occur around rapid transition periods (2014-2017) when the observed index shifts more abruptly than its usual pattern. In those years, predictions overlooked the size of the change. After said transition, the model stays below the observed series for several years, indicating a tendency to understate food security during extended recovery or stabilization. Overall, Figure \ref{fig:2} suggests that production-based predictors do carry meaningful temporal information, but performance may be limited by sharp transitions.
 
 \begin{figure*}
    \centering
-   \includegraphics[width=1\linewidth]{fig4_residuals_over_time.png}
+   \includegraphics[width=1\linewidth]{fig3_residuals_over_time.png}
     \caption{Residuals Over Time (Observed - Predicted $FSI$), 2013-2023}
     \label{fig:3}
 \end{figure*}
 
-Figure~\ref{fig:3} plots the residuals, defined as Actual minus Predicted:
+Figure \ref{fig:3} plots the residuals, defined as Actual minus Predicted:
 $$r(t)=FSI_{\text{actual}}(t)-FSI_{\text{pred}}(t)$$.
 Positive values mean the model is underpredicting and negative values indicate overpredicting. The errors are not spread evenly across the test period. Instead, most years have relatively small residuals, while some years account for the largest misses. Residuals range from about $-0.50$ (early in the test window) to about $+0.66$ (the largest underprediction, near the middle). This swing from overprediction to sustained undershooting suggests difficulty adjusting to the observed series when shifted to a new trajectory. In later years, residuals are consistently small positive values ($0.10$-$0.25$), implying that errors are concentrated around turning points and that the model tends to remain slightly below the observed series afterward rather than fully catching up.
 
@@ -169,7 +163,7 @@ Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_n
 
 \begin{figure*}
     \centering
-    \includegraphics[width=1\linewidth]{fig7_feature_importance_top15.png}
+    \includegraphics[width=1\linewidth]{fig4_feature_importance_top15.png}
     \caption{Top 15 Feature Importances: Random Forest $\Delta FSI$}
     \label{fig:4}
 \end{figure*}
@@ -177,7 +171,7 @@ Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_n
 \begin{table*}[h]
     \centering
     \caption{Shock-Lag Sensitivity Analysis for the Random Forest $\Delta FSI$ Model (Test: 2013-2023)}
-    \label{tab:model_results}
+    \label{tab:1}
     \resizebox{\textwidth}{!}{% <-- Start the resizebox command
     % \rowcolors{2}{gray!10}{white}
         \begin{tabular}{@{}l c c c c c c c@{}}
@@ -204,7 +198,7 @@ Figure \ref{fig:4} shows the top $15$ features from predicting $\Delta FSI$. T_n
     }% <--- End the resizebox command
 \end{table*}
 
-Table \ref{tab:model_results} shows how sensitive the Random Forest $\Delta FSI$ model is to our engineered short-run disruptions and delayed effects. We varied two feature types: our shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps determine if the model benefits more from immediate yearly changes, historical memory, or both.
+Table \ref{tab:1} shows how sensitive the Random Forest $\Delta FSI$ model is to our engineered short-run disruptions and delayed effects. We varied two feature types: our shock features (year by year percentage changes, “_yoy_pct”) and our lag features (prior year values, “_lag1” or “_lag2”). This setup helps determine if the model benefits more from immediate yearly changes, historical memory, or both.
 
 The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MAE $=0.0531$, $R^2=0.6727$), highlighting annual stability in the index. Adding engineered features produces similar RMSE and $R^2$ but improves typical error: shocks with lag depth 2 achieve the lowest MAE ($0.0476$-$0.0487$) with RMSE remaining near $0.0671$-$0.0674$ and $R^2$ near $0.667$-$0.670$, while the lag1-only variant is slightly weaker (RMSE $=0.0682$, MAE $=0.0495$, $R^2=0.6586$). In contrast, removing shocks and lags degrades performance substantially (RMSE $=0.0755$-$0.0775$, MAE $=0.0567$-$0.0680$, $R^2=0.5458$-$0.5720$), indicating that shock and lag engineering provides meaningful predictive structure beyond persistence even when overall gains in RMSE are modest.
 
@@ -214,19 +208,19 @@ The persistence baseline $FSI(t)=FSI(t-1)$ is already strong (RMSE $=0.0669$, MA
     % \centering
     \begin{subfigure}[b]{0.5\textwidth}
     \centering
-    \includegraphics[width=1\textwidth]{fig1_confusion_matrix.png}
+    \includegraphics[width=1\textwidth]{fig5a_confusion_matrix.png}
    \caption[] %justification=centering
       {{\small Confusion Matrix}}
     \label{fig:5a}
     \end{subfigure}
     \begin{subfigure}[b]{0.5\textwidth}
     \centering
-    \includegraphics[width=1\textwidth]{fig6_roc_bootstrap10.png}
+    \includegraphics[width=1\textwidth]{fig5b_roc_bootstrap10.png}
   \caption[] %
       {{\small ROC curve}}    
     \label{fig:5b}
     \end{subfigure}
-    \caption{ROC Curve and Confusion Matrix for Predicting $\Delta FSI$ > 0}
+    \caption{Confusion Matrix and ROC Curve for Predicting $\Delta FSI$ > 0}
     \label{fig:5}
 \end{figure*}
 
@@ -235,8 +229,7 @@ Figure \ref{fig:5} evaluates the model’s ability to predict directional food s
 
 \begin{table*}[h]
     \centering
-    \caption{Directional Model Comparison for $\Delta FSI$: \\
-    Balanced Accuracy, Sensitivity, and Specificity (Test: 2013-2023)}
+    \caption{Directional Model Comparison for $\Delta FSI$:  Balanced Accuracy, Sensitivity, and Specificity (Test: 2013-2023)}
     \label{tab:2}
     \resizebox{\textwidth}{!}{% <-- Start the resizebox command
     % \rowcolors{2}{gray!10}{white}
