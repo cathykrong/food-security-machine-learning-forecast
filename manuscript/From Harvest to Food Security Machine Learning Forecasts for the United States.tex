@@ -40,7 +40,7 @@
 \newcommand{\WordCountfootnote}{
 \begingroup
 \renewcommand\thefootnote{}
-\footnote{\textit{Word Count (excluding figures, tables, references, and title page):} 2922}
+\footnote{\textit{Word Count (excluding figures, tables, references, and title page):} 2854}
 \addtocounter{footnote}{-1}
 \endgroup
 }
@@ -270,8 +270,6 @@ A further limitation concerns the binary directional definition itself (Positive
 Additional limitations should be considered. Although $FSI$ provides a consistent 0-1 target, any index depends on design choices that can affect YoY dynamics. Despite including several macro and commodity-price series, the feature set omits important determinants such as household income and poverty, policy and assistance changes, trade volumes, inventories/stock-to-use conditions, and distribution constraints.
 
 Otherwise, our findings are directly relevant to policy. First, they support using available crop statistics as part of an early-warning style monitoring toolkit, particularly for detecting deviations from recent norms when using YoY shocks and short lags. This can help agencies prioritize attention, scenario planning, and preparedness. Second, the limitations are equally informative: moderate ROC/AUC performance and outlier years reinforce that supply-side strength alone does not guarantee improved food security, implying that yield-boosting or acreage-expansion policies should be paired with measures targeting affordability and access (e.g., price stabilization).
-
-In conclusion, crop indicators alone cannot fully explain food security, but they are sufficiently informative to support national tracking and monitoring, especially when modeled with shocks and lags. The clearest path to more policy-relevant forecasting is expanding predictors toward access, trade, and policy drivers, and treating YoY changes as more predictable when models can learn from both short-run disruptions and delayed effects.
 
 \section{Conclusion}
 Even in a high-producing agricultural system, such as US, national food security can also change rapidly, making timely monitoring and early warnings essential. In conclusion, crop indicators by themselves cannot fully explain food security, but they are sufficiently informative to support tracking and monitoring at the national level, particularly when modelled with shocks and lags. The key finding from this work is that machine learning model is a promising approach to policy-relevant forecasting, and that year to year changes in food security are more predictable when models can learn from both short-run disruptions and delayed effects. Future work should expand our predictor set to include more variables such as access, trade, and policy drivers and move toward uncertainty-aware forecasts. Doing so allows more effective allocation of resources and earlier responses to food-security risks. 
