@@ -1,0 +1,6 @@
+Configuration,Realized_BalancedAccuracy,Sensitivity,Specificity
+Shocks + lag1+lag2,0.75,1,0.5
+Shocks + lag1,0.6786,0.8571,0.5
+No shocks + no lags,0.5179,0.2857,0.75
+Shocks only,0.6786,0.8571,0.5
+Lag1 only,0.5179,0.2857,0.75

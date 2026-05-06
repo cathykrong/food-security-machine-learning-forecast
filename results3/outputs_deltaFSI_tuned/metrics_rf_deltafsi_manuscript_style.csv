@@ -1,0 +1,2 @@
+model,delta_test_rmse,delta_test_mae,delta_test_r2,level_test_rmse,level_test_mae,level_test_r2,level_base_rmse,level_base_mae,level_base_r2,shocks_on,lag_depth,lagged_shocks_on,n_features
+RandomForest_dFSI,0.4216366089925307,0.33636834424257844,-0.22961745064073136,0.42163660899253064,0.33636834424257844,-1.3481754031823767,0.38437075465907644,0.2469960325425691,-0.951437217986282,True,2,False,77

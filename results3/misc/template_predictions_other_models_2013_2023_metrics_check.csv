@@ -1,0 +1,6 @@
+model,TP,FP,TN,FN,Balanced accuracy,Sensitivity,Specificity
+RF full,6,1,3,1,0.8036,0.8571,0.75
+RF macro,5,1,3,2,0.7321,0.7143,0.75
+GB crops,6,2,2,1,0.6786,0.8571,0.5
+Ridge crops,7,3,1,0,0.625,1.0,0.25
+Baseline,0,0,4,7,0.5,0.0,1.0
