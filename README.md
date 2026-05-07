@@ -1,1 +1,1 @@
-
+This project uses machine learning to forecast annual changes in a composite U.S. Food Security Index from 1970 to 2023. The index is built from food production, dietary energy supply, GDP per capita, and temperature change indicators, while predictors include USDA crop data for corn, soybeans, and wheat, along with macroeconomic and commodity variables. Random Forest, RidgeCV, and Gradient Boosting models are tested using shock and lag features to predict both the magnitude and direction of food security changes.
